@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[english]{babel}
+\usepackage{blindtext}
+
+% 1. TeXDoclet output include
+\input{texdoclet_output/TeXDoclet_preamble}
+
+% use behind of TeXDoclet_preamble.tex because of option clash with pdftex
+\usepackage{fullpage} 
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,allcolors=blue,pdfpagemode=UseOutlines,pdfpagelayout=TwoPageRight
+}
+\usepackage{hypcap}
+
+\begin{document}
+
+\date{\today}
+\title{TeXDoclet Java Documentation\bigskip\\ \Large Created with Javadoc TeXDoclet Doclet}
+\author{Greg Wonderly \and S\"oren Caspersen \and Stefan Marx}
+\maketitle
+
+\tableofcontents
+
+\chapter{Foo} {\section{Foo1} {\blindtext}}
+
+\chapter{Bar} {\section{Bar1} {\blindtext \newline \newline \blindtext }\section{Bar2} {\blindtext}}
+
+\chapter{TeXdoclet Java Documentation} {
+% 2. TeXDoclet output include
+\input{texdoclet_output/TeXDoclet}
+}
+
+\chapter{FooBar} {\section{FooBar1} {\blindtext}}
+
+\end{document}
