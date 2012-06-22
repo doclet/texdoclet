@@ -64,16 +64,16 @@ public class HelpOutput {
 		System.err
 				.println("-hyperref                 Use the hyperref package.");
 		System.err
-				.println("-pdfhyperref              Use the hyperref package with pdf. Overrides -hypertex ");
-		System.err.println("-version                  Includes version-tags ");
+				.println("-pdfhyperref              Use the hyperref package with pdf. Overrides -hypertex.");
+		System.err.println("-version                  Includes version-tags.");
 		// ----- (S.M. modification)
 
 		System.err
-				.println("-hr                       Prints horizontal rows in the output (to get a better? view)");
+				.println("-hr                       Prints horizontal rows in the output (to get a better? view).");
 		System.err
-				.println("-include                  Creates output without latex initiation (writes it in initdocsinclude.tex), titlepage, contents ");
+				.println("-include                  Creates output without latex initiation (writes it in initdocsinclude.tex), titlepage, contents.");
 		System.err
-				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\")");
+				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
 		System.err
 				.println("-imagespath               Path to the texdoclet_images dir (absolute or relative to the output document .tex file).");
 
