@@ -6,7 +6,6 @@ public class HelpOutput {
 		System.err.println("TeXDoclet Usage:");
 		System.err
 				.println("-title <title>            A title to use for the generated output document.");
-		// (S.M. modification)
 		System.err
 				.println("-subtitle <title>         A subtitle for the output document.");
 		System.err
@@ -43,21 +42,15 @@ public class HelpOutput {
 				.println("-serial                   Do print Serializable information.");
 		System.err
 				.println("-nosummaries              Do print summaries of fiels, constructors and methods.");
-		// (S.M. modification)
 		System.err
 				.println("-nofieldsummary           Do not print field summaries");
-		// (S.M. modification)
 		System.err
 				.println("-noconstructorsummary     Do not print constructor summaries");
 		System.err
 				.println("-noinherited              Do not include inherited API information in output.");
-		// (S.M. modification)
 		System.err
 				.println("-shortinherited           Prints a short inheritance, only the member name (not the whole signature)");
 		System.err.println("-noindex                  Do not create index.");
-		// (S.M. modification) System.err.println(
-		// "-notree                   Do not create a class tree." );
-		// no class tree is default
 		System.err.println("-tree                     Create a class tree.");
 		System.err
 				.println("-treeindent <float>       Indent <float>cm i the class tree. Default is 1cm.");
@@ -66,8 +59,6 @@ public class HelpOutput {
 		System.err
 				.println("-pdfhyperref              Use the hyperref package with pdf. Overrides -hypertex.");
 		System.err.println("-version                  Includes version-tags.");
-		// ----- (S.M. modification)
-
 		System.err
 				.println("-hr                       Prints horizontal rows in the output (to get a better? view).");
 		System.err
@@ -76,8 +67,6 @@ public class HelpOutput {
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
 		System.err
 				.println("-imagespath               Path to the texdoclet_images dir (absolute or relative to the output document .tex file).");
-
-		// ----- (S.M. modification end)
 
 	}
 

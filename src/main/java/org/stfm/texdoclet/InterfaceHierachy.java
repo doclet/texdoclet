@@ -67,7 +67,6 @@ public class InterfaceHierachy extends java.lang.Object {
 			TeXDoclet.os.print("\\hspace{" + Double.toString(indent)
 					+ "cm} $\\bullet$ "
 					+ HTMLtoLaTeXBackEnd.fixText(qualifName) + " {\\tiny ");
-			// (S.M. modification) only for resolved classes
 			if (cls != null) {
 				TeXDoclet.printRef(cls.containingPackage(), cls.name(), "");
 			}

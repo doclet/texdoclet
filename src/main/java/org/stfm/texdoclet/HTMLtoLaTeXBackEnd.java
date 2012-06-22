@@ -47,7 +47,6 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	Hashtable colors = new Hashtable(10);
 	String block = "";
 	String refurl = null;
-	// S.M. modification : doNotPrintURL changed to doPrintURL
 	String doPrintURL = null;
 	String refname = null;
 	String refimg = null;
@@ -98,7 +97,6 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 		} else if (tag == HTML.Tag.IMG) {
 			String refimg = (String) attrSet.getAttribute(HTML.Attribute.SRC);
 
-			// (S.M. modification) include images not in java source as link
 			if (refimg.indexOf("://") != -1) {
 
 				// if (refimg.indexOf("http://") == 0) {
@@ -249,7 +247,6 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 			ret.append("{\\bf ");
 		} else if (tag == HTML.Tag.A) {
 			refurl = (String) attrSet.getAttribute(HTML.Attribute.HREF);
-			// (S.M. modification)
 			doPrintURL = (String) attrSet.getAttribute("doprinturl");
 			if (refurl != null) {
 				if (TeXDoclet.hyperref) {
@@ -396,8 +393,6 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 		} else if (tag == HTML.Tag.A) {
 			if (refurl != null) {
 				ret.append("}");
-				// S.M. modification : doPrintURL must be set instead of
-				// doNotPrintUrl
 				if (doPrintURL != null) {
 					if (!refurl.equals("")) {
 						ret.append("(at ");

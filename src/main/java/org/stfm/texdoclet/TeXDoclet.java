@@ -121,7 +121,6 @@ public class TeXDoclet extends Doclet {
 	private static final String OUT_FILENAME_DOCS_TEX = "docs.tex";
 	private static final String OUT_PREAMBLE_SUFFIX = "_preamble";
 
-	// (S.M. modification)
 	public static final String SECTION_LEVEL = "section";
 	public static final String CHAPTER_LEVEL = "chapter";
 	public static final String SUBSECTION_LEVEL = "subsection";
@@ -162,11 +161,10 @@ public class TeXDoclet extends Doclet {
 	static String packageFile = "docpackage.tex";
 	static String preambleFile = "docinit.tex";
 	static File packageDir = null;
-	// static Hashtable appendencies = new Hashtable();
+	static Hashtable appendencies = new Hashtable();
 	static Hashtable refs = new Hashtable();
 	static Hashtable externalrefs = new Hashtable();
 
-	// ------ (S.M. modification)
 	static boolean includeTexOutputInOtherTexFile = false;
 	static String sectionLevelMax = null;
 	static String[] sectionLevels = new String[3];
@@ -182,8 +180,6 @@ public class TeXDoclet extends Doclet {
 	static String imagesPath = null;
 	static String subtitle = null;
 	static String introFile = null;
-
-	// ------ (S.M. modification end)
 
 	/*
 	 * Testing entry point for testing tables
@@ -328,9 +324,6 @@ public class TeXDoclet extends Doclet {
 				index = false;
 			} else if (args[i][0].equals("-twosided")) {
 				twosided = true;
-				// (S.M. modification)
-				// } else if ( args[i][0].equals( "-notree" ) ) {
-				// overview = false;
 			} else if (args[i][0].equals("-tree")) {
 				classtree = true;
 			} else if (args[i][0].equals("-hyperref")) {
@@ -352,8 +345,6 @@ public class TeXDoclet extends Doclet {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
-				// ----------- (S.M. modification)
 			} else if (args[i][0].equals("-nofieldsummary")) {
 				useFieldSummary = false;
 			} else if (args[i][0].equals("-noconstructorsummary")) {
@@ -385,7 +376,6 @@ public class TeXDoclet extends Doclet {
 						+ " (use \"subsection\",\"section\" or \"chapter\")");
 				return false;
 			}
-			// ----------- (S.M. modification end)
 
 		}
 		System.out.println("args parsed");
@@ -401,7 +391,7 @@ public class TeXDoclet extends Doclet {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		// (S.M. modification)
+
 		try {
 			if (includeTexOutputInOtherTexFile) {
 				outfilePreamble = outfile
@@ -413,7 +403,6 @@ public class TeXDoclet extends Doclet {
 			ex.printStackTrace();
 		}
 
-		// (S.M. modification)
 		initSections();
 	}
 
@@ -455,7 +444,6 @@ public class TeXDoclet extends Doclet {
 			} catch (Exception ex) {
 			}
 		}
-		// (S.M. modification)
 		if (osPreamble != null) {
 			try {
 				osPreamble.close();
@@ -485,7 +473,6 @@ public class TeXDoclet extends Doclet {
 
 		init();
 
-		// (S.M. modification)
 		if (!includeTexOutputInOtherTexFile) {
 
 			printPreamble(os);
@@ -515,7 +502,6 @@ public class TeXDoclet extends Doclet {
 
 		if (root.inlineTags().length > 0) {
 
-			// (S.M. modification)
 			os.println("\\" + sectionLevels[0] + "*{Introduction}{");
 			os.println(" \\addcontentsline{toc}{" + sectionLevels[0]
 					+ "}{Introduction}");
@@ -584,30 +570,16 @@ public class TeXDoclet extends Doclet {
 
 		// Packages
 
-		// os.println( "\\gdef\\packagename{}" );
-		// os.println( "\\gdef\\classname{}" );
 		Enumeration e = map.elements();
 		while (e.hasMoreElements()) {
 			final Package pkg = (Package) e.nextElement();
 
-			// System.out.println("processing Package: " + pkg.pkg);
-
-			// (S.M. modification)
 			// os.println( "\\newpage" );
-			// os.println(
-			// "\\def\\packagename{"+HTMLtoLaTeXBackEnd.fixText(pkg.pkg)+"}" );
 
 			addFile(os, packageFile, false);
 
-			// (S.M. modification)
-			// os.println(
-			// "\\section"+BOLD+" Package "+HTMLtoLaTeXBackEnd.fixText(pkg.pkg)
-			// +"}{" );
 			os.println("\\" + sectionLevels[0] + "{Package "
 					+ HTMLtoLaTeXBackEnd.fixText(pkg.pkg) + "}{");
-
-			// (S.M. modification)
-			// os.println( "\\thispagestyle{empty}" );
 
 			os.print("\\label{" + refName(makeRefKey(pkg.pkg)) + "}");
 			if (hyperref) {
@@ -615,14 +587,12 @@ public class TeXDoclet extends Doclet {
 						+ "}{}");
 			}
 
-			// (S.M. modification)
 			// os.println(
 			// "\\markboth{\\protect\\packagename}{\\protect\\packagename}" );
 			// os.println(
 			// "\\markboth{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}"
 			// );
 
-			// (S.M. modification)
 			if (ITALIC.indexOf("textit") != -1) {
 				os.println("\\hskip -.05in");
 			}
@@ -646,7 +616,6 @@ public class TeXDoclet extends Doclet {
 			if (pkg.pkgDoc.inlineTags().length > 0) {
 				printTags(pkg.pkgDoc.inlineTags());
 
-				// (S.M. modification)
 				if (useHr) {
 					os.println("\\mbox{}\\\\ \\rule{\\hsize}{.7mm}");
 				}
@@ -655,7 +624,6 @@ public class TeXDoclet extends Doclet {
 				}
 			}
 
-			// (S.M. modification)
 			// os.println( "\\newpage");
 			// os.println(
 			// "\\markboth{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}"
@@ -668,20 +636,24 @@ public class TeXDoclet extends Doclet {
 
 			os.println("}");
 		}
-		/*
-		 * if (appendencies.size() > 0) { os.println("\\appendix"); Iterator it
-		 * = appendencies.keySet().iterator(); while (it.hasNext()) {
-		 * //os.println
-		 * (" \\chapter{"+(char)('A'+1)+"}\n\\hyperdef{appendix1}{}sdafafdasd");
-		 * os.println(" \\hyperdef{appendix1}{}sdafafdasd"); String sfa =
-		 * (String) it.next(); System.out.println(sfa); //addFile(sfa, true); }
-		 * }
-		 */
 
-		/*
-		 * os.println("\\markboth{}{}"); if (index) { os.println( "\\printindex"
-		 * ); }
-		 */
+		// if (appendencies.size() > 0) {
+		// os.println("\\appendix");
+		// Iterator it = appendencies.keySet().iterator();
+		// while (it.hasNext()) {
+		// os.println(" \\chapter{" + (char) ('A' + 1)
+		// + "}\n\\hyperdef{appendix1}{}");
+		// os.println(" \\hyperdef{appendix1}{}sdafafdasd");
+		// String sfa = (String) it.next();
+		// System.out.println(sfa);
+		// addFile(os, sfa, true);
+		// }
+		// }
+
+		// os.println("\\markboth{}{}");
+		// if (index) {
+		// os.println("\\printindex");
+		// }
 
 		addFile(os, finishFile, false);
 
@@ -699,7 +671,6 @@ public class TeXDoclet extends Doclet {
 		// this is not our job if including in other document
 		if (!includeTexOutputInOtherTexFile) {
 
-			// (S.M. modification) koma script support (scrreprt, scrartcl)
 			if (docclass.equals("scrreprt") || docclass.equals("scrartcl")) {
 				os.println("\\documentclass[11pt,a4paper,titlepage,smallheadings,"
 						+ "headinclude,headsepline,DIV13,BCOR12.5mm");
@@ -721,24 +692,13 @@ public class TeXDoclet extends Doclet {
 
 		printPreambleNewCommands(os);
 
-		// os.println("\\definecolor{Light}{gray}{.90}");
-
 		printPreambleTitle(os);
 
-		// already set in \\usepackage{fullpage} option
-		// os.println("\\pagestyle{" + style + "}");
-
-		// (S.M. modification) some stuff uncommented
 		// os.println("\\addtocontents{toc}{\\protect\\thispagestyle{empty}}");
 		// os.println("\\addtocontents{toc}{\\protect\\def\\protect\\packagename{}}");
 		// os.println("\\addtocontents{toc}{\\protect\\def\\protect\\classname{}}");
 
-		// os.println("\\oddsidemargin 0in");
-		// os.println("\\evensidemargin 0in");
-		// os.println("\\topmargin -.3in");
 		os.println("\\chardef\\textbackslash=`\\\\");
-		// os.println("\\textheight 9.4in");
-		// os.println("\\textwidth 6.5in");
 
 		if (index) {
 			os.println("\\makeindex");
@@ -750,15 +710,10 @@ public class TeXDoclet extends Doclet {
 
 	static void printPreambleUsePackages(PrintWriter os) {
 		os.println("\\usepackage{color}");
-		// (S.M. modification)
-		// os.println("\\usepackage{graphicx}");
-		// os.println("\\usepackage{amsfonts}");
-		// os.println("\\usepackage{amsmath}");
 		os.println("\\usepackage{ifthen}");
 		if (index) {
 			os.println("\\usepackage{makeidx}");
 		}
-		// (S.M. modification)
 		os.println("\\usepackage{ifpdf}");
 		os.println("\\usepackage[" + style + "]{fullpage}");
 	}
@@ -809,30 +764,12 @@ public class TeXDoclet extends Doclet {
 		os.println("  \\makebox[\\hsize]{%");
 		os.println("    \\parbox{.4in}{}%");
 		os.println("    \\parbox[l]{5in}{%");
-		// (S.M. modification) no italic for first sentence of class
-		// description
-		// os.println("      \\vspace{1mm}\\it%");
 		os.println("      \\vspace{1mm}%");
 		os.println("      #3%");
 		os.println("      \\vspace{1mm}%");
 		os.println("    }%");
 		os.println("  }%");
 		os.println("}");
-
-		// (S.M. modification)
-
-		// os.println("\\newcommand{\\isep}[0]{%");
-		// os.println("\\setlength{\\itemsep}{-.4ex}");
-		// os.println("}");
-		//
-		// os.println("\\newcommand{\\sld}[0]{%");
-		// os.println("\\setlength{\\topsep}{0em}");
-		// os.println("\\setlength{\\partopsep}{0em}");
-		// os.println("\\setlength{\\parskip}{0em}");
-		// os.println("\\setlength{\\parsep}{-1em}");
-		// os.println("}");
-
-		// os.println("\\newcommand{\\membername}[1]{{\\it #1}\\linebreak}");
 
 		if (useHr) {
 			os.println("\\newcommand{\\divideents}[1]{\\vskip -1em\\indent\\rule{2in}{.5mm}}");
@@ -841,9 +778,6 @@ public class TeXDoclet extends Doclet {
 		os.println("\\newcommand{\\refdefined}[1]{");
 		os.println("\\expandafter\\ifx\\csname r@#1\\endcsname\\relax");
 		os.println("\\relax\\else");
-		// (S.M. modification)
-		// os.println("{$($in \\ref{#1}, page \\pageref{#1}$)$}");
-		// os.println("\\fi}" );
 		os.println("{$($in \\ref{#1}, page \\pageref{#1}$)$}\\fi}");
 	}
 
@@ -896,9 +830,6 @@ public class TeXDoclet extends Doclet {
 		if (v.size() > 0) {
 			os.println("\\vskip .13in");
 
-			// os.println("\\hbox" + BOLD + " "
-			// + HTMLtoLaTeXBackEnd.fixText(title) + "}");
-
 			os.println("\\hbox{" + BOLD + " "
 					+ HTMLtoLaTeXBackEnd.fixText(title) + "}}");
 
@@ -922,7 +853,6 @@ public class TeXDoclet extends Doclet {
 
 	static void printClassHierarchy(RootDoc root) {
 
-		// (S.M. modification)
 		os.println("\\" + sectionLevels[0] + "*{Class Hierarchy}{");
 
 		os.println("\\thispagestyle{empty}");
@@ -942,10 +872,8 @@ public class TeXDoclet extends Doclet {
 		}
 		if (classHierachy.root.size() != 0) {
 
-			// (S.M. modification)
 			os.println("\\" + sectionLevels[1] + "*{Classes}");
 
-			// (S.M. modification) raggedright needed here for correct indent
 			os.println("{\\raggedright");
 
 			classHierachy.printTree(root, overviewindent);
@@ -963,10 +891,7 @@ public class TeXDoclet extends Doclet {
 			}
 		}
 		if (interfaceHierachy.root.size() != 0) {
-			// (S.M. modification)
-			// os.println( "\\section*{Interfaces}");
 			os.println("\\" + sectionLevels[1] + "*{Interfaces}");
-
 			interfaceHierachy.printTree(root, overviewindent);
 		}
 
@@ -980,11 +905,7 @@ public class TeXDoclet extends Doclet {
 			}
 		}
 		if (exceptionHierachy.root.size() != 0) {
-
-			// (S.M. modification)
-			// os.println( "\\section*{Exceptions}");
 			os.println("\\" + sectionLevels[1] + "*{Exceptions}");
-
 			exceptionHierachy.printTree(root, overviewindent);
 		}
 
@@ -998,11 +919,7 @@ public class TeXDoclet extends Doclet {
 			}
 		}
 		if (errorHierachy.root.size() != 0) {
-
-			// (S.M. modification)
-			// os.println( "\\section*{Errors}");
 			os.println("\\" + sectionLevels[1] + "*{Errors}");
-
 			errorHierachy.printTree(root, overviewindent);
 		}
 
@@ -1019,18 +936,11 @@ public class TeXDoclet extends Doclet {
 	 *            Vector of the classes to be laid out.
 	 */
 	static void layoutClasses(String type, Vector classes) {
-		// (S.M. modification)
-		// if ( classes.size() > 0 ) {
-		// os.print("\\section{" );
-		// os.print( type );
-		// os.println( "}{" );
-		// }
 		for (int i = 0; i < classes.size(); ++i) {
 			ClassDoc cd = (ClassDoc) classes.elementAt(i);
 			// os.println(
 			// "\\gdef\\classname{"+HTMLtoLaTeXBackEnd.fixText(cd.name())+"}" );
 
-			// (S.M. modification)
 			os.print("\\" + sectionLevels[1] + "{");
 
 			String mtype = "Class";
@@ -1051,8 +961,6 @@ public class TeXDoclet extends Doclet {
 							+ "}");
 				}
 			}
-			// os.println(
-			// ""+BOLD+" {\\it "+mtype+"} "+HTMLtoLaTeXBackEnd.fixText(cd.name())+"}}{");
 			os.println(mtype + " " + HTMLtoLaTeXBackEnd.fixText(cd.name())
 					+ "}{");
 			if (useHr) {
@@ -1081,14 +989,8 @@ public class TeXDoclet extends Doclet {
 				os.println("  \\end{list}");
 			}
 
-			// os.println( "\\"+sectionLevels[2]+"{Declaration}{" );
-			// os.println(
-			// "\\fcolorbox{black}{Light}{\\parbox[s]{.98\\hsize}{");
-			// os.print(
-			// "\\small "+HTMLtoLaTeXBackEnd.fixText(cd.modifiers())+" " );
 			os.println("\\" + sectionLevels[2] + "{Declaration}{");
-			// os.println(
-			// "\\fcolorbox{black}{Light}{\\parbox[s]{.98\\hsize}{");
+
 			os.print("\\small " + HTMLtoLaTeXBackEnd.fixText(cd.modifiers())
 					+ " ");
 			if (cd.isInterface() == false) {
@@ -1104,15 +1006,11 @@ public class TeXDoclet extends Doclet {
 
 			ClassDoc intf[] = cd.interfaces();
 			if (intf.length > 0) {
-				// os.println( "\\\\ "+BOLD+" implements} " );
-				// ----- (S.M. modification) Bug fixed !
-				// interfaces never implement something !
 				if (cd.isInterface() == false) {
 					os.println("\\\\ " + BOLD + " implements} ");
 				} else {
 					os.println("\\\\ " + BOLD + " extends} ");
 				}
-				// ----- (S.M. modification end)
 				for (int j = 0; j < intf.length; ++j) {
 					ClassDoc in = intf[j];
 					String nm;
@@ -1128,7 +1026,6 @@ public class TeXDoclet extends Doclet {
 					os.print(HTMLtoLaTeXBackEnd.fixText(nm));
 				}
 			}
-			// os.println("}}}");
 			os.println("}");
 			ExecutableMemberDoc[] mems;
 			FieldDoc[] flds;
@@ -1152,13 +1049,6 @@ public class TeXDoclet extends Doclet {
 				}
 			}
 
-			// if (!subclasses.equals("")) {
-			// os.println("\\"+sectionLevels[2]+"{All known subclasses}{" +
-			// subclasses +
-			// "}");
-			// }
-			// ----- (S.M. modification) Bug fixed !
-			// interfaces never have subclasses, they have subinterfaces !
 			if (cd.isInterface()) {
 				if (!subclasses.equals("")) {
 					os.println("\\" + sectionLevels[2]
@@ -1170,7 +1060,6 @@ public class TeXDoclet extends Doclet {
 							+ "{All known subclasses}{" + subclasses + "}");
 				}
 			}
-			// ----- (S.M. modification end)
 
 			String subintf = "";
 			String implclasses = "";
@@ -1204,14 +1093,6 @@ public class TeXDoclet extends Doclet {
 						}
 					}
 				}
-
-				// (S.M. modification)
-				// Because of the correction above, the subinterfaces are
-				// already printed !
-				// if (!subintf.equals(""))
-				// os.println("\\"+sectionLevels[2]+"{All known subinterfaces}{"
-				// +
-				// subintf + "}");
 
 				if (!implclasses.equals("")) {
 					os.println("\\" + sectionLevels[2]
@@ -1261,19 +1142,11 @@ public class TeXDoclet extends Doclet {
 				printMembers(cd, mems, true);
 				os.println("}");
 			}
-			// (S.M. modification)
-			//
-			// if (inherited == false) {
-			// os.println( "\\hide{inherited}{" );
-			// }
+
 			if (inherited == true) {
 
 				boolean yet = false;
 
-				// (S.M. modification) cd.superclass() will always return null
-				// for interfaces
-				// ??!
-				// so we handle it specially
 				if (!cd.isInterface()) {
 
 					ClassDoc par = cd.superclass();
@@ -1283,51 +1156,6 @@ public class TeXDoclet extends Doclet {
 
 						printInherited(par);
 
-						// boolean members = false;
-						//
-						// MemberDoc[] inheritedmembers = new MemberDoc[par
-						// .fields().length + par.methods().length];
-						// for (int k = 0; k < par.fields().length; k++) {
-						// inheritedmembers[k] = par.fields()[k];
-						// members = true;
-						// }
-						// for (int k = 0; k < par.methods().length; k++) {
-						// inheritedmembers[k + par.fields().length] = par
-						// .methods()[k];
-						// members = true;
-						// }
-						//
-						// // (S.M. modification) print only if members
-						// available (
-						// // for instance in case of a not correct set
-						// classpath
-						// // members are missed)
-						// if (members) {
-						// os.print("\\" + sectionLevels[2] + "{");
-						// // (S.M. modification) do not user true type and do
-						// // not print full name here
-						// // in the section heading
-						// // this produces an ugly view in the Contents ...
-						// //
-						// os.print("Members inherited from class "+TRUETYPE+""
-						// os.print("Members inherited from class {"
-						// + HTMLtoLaTeXBackEnd.fixText(
-						// // par.qualifiedName()
-						// par.name())
-						// + "} \\textnormal{\\small");
-						// printRef(par.containingPackage(), par.name(), null);
-						// os.println("}}{");
-						// os.println("{\\small ");
-						// // (S.M. modification)
-						// // ... but print here the full name including the
-						// // package
-						// os.println("(Fully qualified name: "
-						// + par.qualifiedName() + ")");
-						//
-						// printinheritedMembers(par, inheritedmembers, false);
-						//
-						// os.println("}}");
-						// }
 						par = par.superclass();
 					}
 
@@ -1345,64 +1173,15 @@ public class TeXDoclet extends Doclet {
 
 						printInherited(par);
 
-						// boolean members = false;
-						//
-						// MemberDoc[] inheritedmembers = new MemberDoc[par
-						// .fields().length + par.methods().length];
-						// for (int k = 0; k < par.fields().length; k++) {
-						// inheritedmembers[k] = par.fields()[k];
-						// members = true;
-						// }
-						// for (int k = 0; k < par.methods().length; k++) {
-						// inheritedmembers[k + par.fields().length] = par
-						// .methods()[k];
-						// members = true;
-						// }
-						//
-						// // (S.M. modification) print only if members
-						// available (
-						// // if class not found because classpath not correctly
-						// // set, they would be missed)
-						// if (members) {
-						// os.print("\\" + sectionLevels[2] + "{");
-						// //
-						// os.println("Members inherited from class "+TRUETYPE+""+
-						// //
-						// HTMLtoLaTeXBackEnd.fixText(par.qualifiedName())+"}}{");
-						// // os.println("\\par{\\small " );
-						// // printRef( par.containingPackage(), par.name(),
-						// // null );
-						// os.print("Members inherited from class "+TRUETYPE+""
-						// + HTMLtoLaTeXBackEnd.fixText(par
-						// .qualifiedName())
-						// + "} \\textnormal{\\small");
-						// printRef(par.containingPackage(), par.name(), null);
-						// os.println("}}{");
-						// os.println("{\\small ");
-						//
-						// printinheritedMembers(par, inheritedmembers, false);
-						//
-						// os.println("}}");
-						// }
 					}
 
 				}
 
 			}
-			// (S.M. modification)
-			//
-			// if ( inherited == false ) {
-			// os.println("}");
-			// }
 
 			os.println("}");
-			// (S.M. modification)
 			// os.print("\\newpage" );
 		}
-		// (S.M. modification)
-		// if ( classes.size() > 0 ) {
-		// os.println("}");
-		// }
 	}
 
 	/**
@@ -1700,9 +1479,6 @@ public class TeXDoclet extends Doclet {
 				+ HTMLtoLaTeXBackEnd.fixText(mem.name() + mem.flatSignature())
 				+ "}");
 
-		// (S.M. modification)
-		// If including the output this would result in hundreds of undefull
-		// boxes ??!
 		if (hyperref) {
 			if (copiedTo == null) {
 				os.print("\\hypertarget{"
@@ -1714,8 +1490,7 @@ public class TeXDoclet extends Doclet {
 								+ copiedTo.signature())) + "}{");
 			}
 		}
-		// (S.M. modification)
-		// os.print("\\membername{"+HTMLtoLaTeXBackEnd.fixText(mem.name())+"}");
+
 		os.print(BOLD + " " + HTMLtoLaTeXBackEnd.fixText(mem.name()) + "}\\\\");
 		if (hyperref) {
 			os.print("}");
@@ -1789,15 +1564,10 @@ public class TeXDoclet extends Doclet {
 		if (mem.inlineTags().length > 0) {
 			if (!yet) {
 				os.println("\\begin{itemize}");
-				// os.println("\\sld");
 				yet = true;
 			}
 			os.println("\\item{");
-			// os.println("\\sld");
 			if (copiedTo == null) {
-				// os.println(
-				// ""+BOLD+" Description}\n  \\begin{itemize}\\isep\n   \\item{"
-				// );
 				os.println(BOLD + " Description}\n");
 			} else {
 				os.print(BOLD + " Description copied from ");
@@ -1812,11 +1582,9 @@ public class TeXDoclet extends Doclet {
 				}
 				os.print("{\\small ");
 				os.print("\\refdefined{" + refName(makeRefKey(classname)) + "}");
-				// os.println( "} }\n  \\begin{itemize}\\isep\n   \\item{" );
 				os.println("} }\n");
 			}
 			printTags(mem.inlineTags());
-			// os.println( "}%end item\n  \\end{itemize}\n}" );
 			os.println("\n}");
 		}
 
@@ -1824,18 +1592,13 @@ public class TeXDoclet extends Doclet {
 		if (params.length > 0) {
 			if (!yet) {
 				os.println("\\begin{itemize}");
-				// os.println("\\sld");
 				yet = true;
 			}
 			os.println("\\item{");
-			// os.println("\\sld");
 			os.println(BOLD + " Parameters}");
-			// os.println("\\sld\\isep");
 			os.println("  \\begin{itemize}");
-			// os.println("\\sld\\isep");
 			for (int j = 0; j < params.length; ++j) {
 				os.println("   \\item{");
-				// os.println("\\sld");
 				os.print(TRUETYPE
 						+ HTMLtoLaTeXBackEnd.fixText(params[j].parameterName())
 						+ "}" + " -- ");
@@ -1852,7 +1615,6 @@ public class TeXDoclet extends Doclet {
 			if (ret.length > 0) {
 				if (!yet) {
 					os.println("\\begin{itemize}");
-					// os.println("\\sld");
 					yet = true;
 				}
 				os.println("\\item{" + BOLD + " Returns} -- ");
@@ -1870,12 +1632,10 @@ public class TeXDoclet extends Doclet {
 			if (excp.length > 0) {
 				if (!yet) {
 					os.println("\\begin{itemize}");
-					// os.println("\\sld");
 					yet = true;
 				}
 				os.println("\\item{" + BOLD + " Throws}");
 				os.println("  \\begin{itemize}");
-				// os.println("\\sld");
 				for (int j = 0; j < excp.length; ++j) {
 					String ename = excp[j].exceptionName();
 					ClassDoc cdoc = excp[j].exception();
@@ -1916,7 +1676,8 @@ public class TeXDoclet extends Doclet {
 	}
 
 	/**
-	 * (S.M. modification)
+	 * Prints class inheritance (list of members inherited from superclasses).
+	 * 
 	 */
 	static void printInherited(ClassDoc par) {
 		boolean members = false;
@@ -1932,24 +1693,14 @@ public class TeXDoclet extends Doclet {
 			members = true;
 		}
 
-		// (S.M. modification) print only if members available (
-		// for instance in case of a not correct set classpath
-		// members are missed)
 		if (members) {
 			os.print("\\" + sectionLevels[2] + "{");
-			// (S.M. modification) do not user true type and do
-			// not print full name here
+			// do not user true type and do not print full name here
 			// because this produces an ugly view in the Contents section
 			// os.print("Members inherited from class "+TRUETYPE+""
 			os.print("Members inherited from class "
-					+ HTMLtoLaTeXBackEnd.fixText(
-					// par.qualifiedName()
-							par.name()) + " ");
-			// par.name()) + "} \\textnormal{\\small");
+					+ HTMLtoLaTeXBackEnd.fixText(par.name()) + " ");
 			os.println("}{");
-			// (S.M. modification)
-			// ... but print here the full name including the
-			// package and reference
 
 			os.println(TRUETYPE + par.qualifiedName() + "} {\\small ");
 			printRef(par.containingPackage(), par.name(), null);
@@ -1985,7 +1736,6 @@ public class TeXDoclet extends Doclet {
 		Collections.sort(l);
 		Iterator itr = l.iterator();
 
-		// (S.M. modification)
 		if (shortInheritance) {
 
 			for (int i = 0; itr.hasNext(); ++i) {
@@ -2009,8 +1759,6 @@ public class TeXDoclet extends Doclet {
 
 				// Print signature
 
-				// (S.M. modification)
-				// os.println("\\item{\\vskip -1.9ex " );
 				os.println("\\item{\\vskip -1.5ex ");
 				os.print(TRUETYPE);
 				os.print(HTMLtoLaTeXBackEnd.fixText(mem.modifiers()));
@@ -2100,9 +1848,9 @@ public class TeXDoclet extends Doclet {
 				}
 				os.println("}%end item");
 
-			} // end for
+			}
 			os.println("\\end{itemize}");
-		} // shortInheritance
+		}
 	}
 
 	/**
