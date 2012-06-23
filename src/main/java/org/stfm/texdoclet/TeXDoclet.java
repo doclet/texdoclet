@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
@@ -111,7 +113,6 @@ import com.sun.javadoc.Type;
  * 
  * @see HTMLtoLaTeXBackEnd
  * @see #start(RootDoc) start
- * @version $Revision: 1.8 $
  * @author Gregg Wonderly - C2 Technologies Inc.
  * @author Soeren Caspersen - XO Software.
  * @author Stefan Marx
@@ -173,7 +174,7 @@ public class TeXDoclet extends Doclet {
 	static boolean useHr = false;
 	static boolean shortInheritance = false;
 	/**
-	 * print writer for extra init file
+	 * print writer for extra LaTeX preamble file
 	 */
 	static PrintWriter osPreamble = null;
 	static String outfilePreamble = null;
@@ -181,19 +182,56 @@ public class TeXDoclet extends Doclet {
 	static String subtitle = null;
 	static String introFile = null;
 
-	/*
-	 * Testing entry point for testing tables
-	 */
 	public static void main(String args[]) {
-		init();
-		os.println("\\documentstyle{book}");
-		os.println("\\begin{document}");
-		os.println(HTMLtoLaTeXBackEnd.fixText("<table border> "
-				+ "<tr><th>Heading 1<th>Heading 2<th>Heading 3"
-				+ "<tr><td>Column 1<td colspan=2 align=right>2 columns here"
-				+ "<tr><td colspan=2>two here as well<td>just 1"
-				+ "<tr><td align=left>1<td>2<td align=right>3" + "</table>"));
-		os.println("\\end{document}");
+
+		// print help :
+
+		if (args.length == 1
+				&& (args[0].equals("-h") || args[0].equals("--help"))) {
+			HelpOutput.printHelp();
+			return;
+		}
+
+		// or call javadoc :
+
+		try {
+
+			System.out.println("Creating LaTeX Java documentation ...");
+
+			String argsJd[] = new String[args.length + 4];
+			argsJd[0] = "-docletpath";
+			argsJd[1] = "./TeXDoclet.jar";
+			argsJd[2] = "-doclet";
+			argsJd[3] = TeXDoclet.class.getName();
+			System.arraycopy(args, 0, argsJd, 4, args.length);
+
+			System.out
+					.println("javadoc arguments : " + Arrays.toString(argsJd));
+			String argsString = Arrays.toString(argsJd);
+			argsString = argsString.substring(1, argsString.length() - 1)
+					.replace(",", "");
+			System.out.println("command to execute : " + "javadoc "
+					+ argsString);
+
+			// TODO something goes wrong here. javadoc always prints help output
+
+			Process p = Runtime.getRuntime().exec("javadoc", argsJd);
+			p.waitFor();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					p.getInputStream()));
+			String line = reader.readLine();
+			while (line != null) {
+				System.out.println(line);
+				line = reader.readLine();
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (InterruptedException e2) {
+			e2.printStackTrace();
+		}
+
+		System.out.println("... Done.");
+
 	}
 
 	/**
