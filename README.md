@@ -5,8 +5,7 @@ TeXDoclet is a Java doclet implementation that generates a LaTeX file from you J
 
 The doclet is based on the doclet originally created by Greg Wonderly of
 [C2 technologies Inc.](http://www.c2-tech.com>) and its revision by Soeren Caspersen of
-[XO Software](http://www.xosoftware.dk). The project of Greg Wonderly is available here: 
-<http://java.net/projects/texdoclet>.
+[XO Software](http://www.xosoftware.dk).
 
 See <http://doclet.github.com> for more information.
 
@@ -18,7 +17,7 @@ Build
 Run
 ---
 
-You have to specify that *javadoc* has to use another doclet than the default doclet by giving the following parameters to the *javadoc* call :
+You have to specify that *javadoc* has to use another doclet than the default doclet by giving the following options to the *javadoc* call :
 
 	javadoc -docletpath <path to>TeXDoclet.jar \
 		-doclet org.stfm.texdoclet.TeXDoclet \
@@ -41,9 +40,13 @@ Example :
 
 See `createDocs.sh` scripts in `/examples` subdirectory for more examples.
 
-Print help :
+Print help (TeXDoclet + javadoc help) :
 
 	javadoc -docletpath target/TeXDoclet.jar -doclet org.stfm.texdoclet.TeXDoclet
+
+or (TeXDoclet help only) :
+
+	java -jar target/TeXDoclet.jar -h
 
 TeXDoclet usage :
 
@@ -80,4 +83,8 @@ TeXDoclet usage :
 	-imagespath               Path to the texdoclet_images dir (absolute or relative to the output document .tex file).
 
 
+Previous versions
+-----------------
 
+- The intitial project of Greg Wonderly is available here : <http://java.net/projects/texdoclet>.
+- Its [revision](http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet/1.3/share/README.txt) by Soeren Caspersen you find here : <http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet>.
