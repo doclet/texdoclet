@@ -5,8 +5,10 @@ TeXDoclet is a Java doclet implementation that generates a LaTeX file from you J
 
 The doclet is based on the doclet originally created by Greg Wonderly of
 [C2 technologies Inc.](http://www.c2-tech.com>) and its revision by Soeren Caspersen of
-[XO Software](http://www.xosoftware.dk). The project of Greg Wonderly is still available here: 
+[XO Software](http://www.xosoftware.dk). The project of Greg Wonderly is available here: 
 <http://java.net/projects/texdoclet>.
+
+See <http://doclet.github.com> for more information.
 
 Build
 -----
@@ -15,6 +17,12 @@ Build
 
 Run
 ---
+
+You have to specify that *javadoc* has to use another doclet than the default doclet by giving the following parameters to the *javadoc* call :
+
+	javadoc -docletpath <path to>TeXDoclet.jar \
+		-doclet org.stfm.texdoclet.TeXDoclet \
+		<TeXDoclet parameters>
 
 Example :
 
@@ -31,7 +39,7 @@ Example :
 		-sourcepath src/main/java \
 		-subpackages org:com
 
-See createDocs.sh script in /examples dir how to run.
+See `createDocs.sh` scripts in `/examples` subdirectory for more examples.
 
 Print help :
 
