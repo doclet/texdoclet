@@ -37,7 +37,7 @@ Example :
 		-title "TeXDoclet Java Documentation" \
 		-author "Greg Wonderly \and S\"oren Caspersen \and Stefan Marx" \
 		-sourcepath src/main/java \
-		-subpackages org:com
+		-subpackages org
 
 See `createDocs.sh` scripts in `/examples` subdirectory for more examples.
 

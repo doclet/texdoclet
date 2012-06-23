@@ -14,7 +14,7 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-subtitle "Created with Javadoc TeXDoclet Doclet" \
 	-author "Greg Wonderly \and S\"oren Caspersen \and Stefan Marx" \
 	-sourcepath ../../src/main/java \
-	-subpackages org:com \
+	-subpackages org \
  	-shortinherited
 
 cd texdoclet_output

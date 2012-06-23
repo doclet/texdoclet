@@ -13,7 +13,7 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-imagespath ".." \
 	-output texdoclet_output/TeXDoclet.tex \
 	-sourcepath ../../src/main/java \
-	-subpackages org:com \
+	-subpackages org \
 	-sectionlevel section \
 	-docclass article \
 	-nosummaries

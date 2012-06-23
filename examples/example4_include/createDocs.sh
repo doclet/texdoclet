@@ -23,7 +23,7 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-hyperref \
 	-output texdoclet_output/TeXDoclet.tex \
 	-sourcepath ../../src/main/java \
-	-subpackages com:org \
+	-subpackages org \
  	-include \
  	-sectionlevel section
 
