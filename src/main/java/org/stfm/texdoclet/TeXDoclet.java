@@ -213,7 +213,8 @@ public class TeXDoclet extends Doclet {
 			System.out.println("command to execute : " + "javadoc "
 					+ argsString);
 
-			// TODO something goes wrong here. javadoc always prints help output
+			// TODO something goes wrong here. javadoc always prints help
+			// output.
 
 			Process p = Runtime.getRuntime().exec("javadoc", argsJd);
 			p.waitFor();
@@ -675,23 +676,25 @@ public class TeXDoclet extends Doclet {
 			os.println("}");
 		}
 
-		// if (appendencies.size() > 0) {
-		// os.println("\\appendix");
-		// Iterator it = appendencies.keySet().iterator();
-		// while (it.hasNext()) {
-		// os.println(" \\chapter{" + (char) ('A' + 1)
-		// + "}\n\\hyperdef{appendix1}{}");
-		// os.println(" \\hyperdef{appendix1}{}sdafafdasd");
-		// String sfa = (String) it.next();
-		// System.out.println(sfa);
-		// addFile(os, sfa, true);
-		// }
-		// }
+		if (appendencies.size() > 0) {
+			os.println("\\appendix");
+			Iterator it = appendencies.keySet().iterator();
+			int i = 0;
+			while (it.hasNext()) {
+				os.println("\\" + sectionLevels[0] + "{}{");
+				os.println(" \\label{appendix" + (i + 1) + "}");
+				String sfa = (String) it.next();
+				// System.out.println(sfa);
+				addFile(os, sfa, true);
+				os.println("}");
+				i++;
+			}
+		}
 
-		// os.println("\\markboth{}{}");
-		// if (index) {
-		// os.println("\\printindex");
-		// }
+		os.println("\\markboth{}{}");
+		if (index) {
+			os.println("\\printindex");
+		}
 
 		addFile(os, finishFile, false);
 

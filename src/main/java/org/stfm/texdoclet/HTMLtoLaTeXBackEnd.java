@@ -24,9 +24,16 @@ import javax.swing.text.html.parser.ParserDelegator;
 import com.keypoint.PngEncoder;
 
 /**
+ * <p>
  * This class implements a <CODE>ParserCallback</CODE> that translates HTML to
  * the corresponding <TEX txt="\LaTeX{}">LaTeX</TEX>. Not all tags a processed
  * but the most common are.
+ * <p>
+ * HTML links to files located in the doc-files directory (<a
+ * href="doc-files/appendix_a.html">appendix_a.html</a>, <a
+ * href="doc-files/appendix_b.txt">appendix_b.txt</a>) are transformed to
+ * references to the appendix, whereby the referenced files itself are included
+ * in the appendix.
  * 
  * @see javax.swing.text.html.parser.ParserDelegator
  * @author Soeren Caspersen
@@ -250,35 +257,37 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 			doPrintURL = (String) attrSet.getAttribute("doprinturl");
 			if (refurl != null) {
 				if (TeXDoclet.hyperref) {
-					// if (refurl.toLowerCase().startsWith("doc-files")) {
-					// File file = new File(TeXDoclet.packageDir, refurl);
-					// if (file.exists()) {
-					// if (TeXDoclet.appendencies.contains(file.getPath())) {
-					// refurl = (String) TeXDoclet.appendencies
-					// .get(file.getPath());
-					// } else {
-					// refurl = "appendix"
-					// + new Integer(
-					// TeXDoclet.appendencies.size() + 1);
-					// TeXDoclet.appendencies.put(file.getPath(),
-					// refurl);
-					// }
-					// ret.append("\\hyperref{}{" + refurl + "}{}{");
-					// return;
-					// }
-					// }
-
-					String sharp = "";
-					if (refurl.indexOf("#") >= 0) {
-						sharp = refurl.substring(refurl.indexOf("#") + 1,
-								refurl.length());
-						if (sharp.indexOf("%") >= 0) {
-							sharp = ""; // Don't know what to do with '%'
+					if (refurl.toLowerCase().startsWith("doc-files")) {
+						File file = new File(TeXDoclet.packageDir, refurl);
+						if (file.exists()) {
+							if (TeXDoclet.appendencies.contains(file.getPath())) {
+								refurl = (String) TeXDoclet.appendencies
+										.get(file.getPath());
+							} else {
+								refurl = "appendix"
+										+ new Integer(
+												TeXDoclet.appendencies.size() + 1);
+								TeXDoclet.appendencies.put(file.getPath(),
+										refurl);
+							}
+							ret.append("{");
+							return;
 						}
-						refurl = refurl.substring(0, refurl.indexOf("#"));
+					} else {
+
+						String sharp = "";
+						if (refurl.indexOf("#") >= 0) {
+							sharp = refurl.substring(refurl.indexOf("#") + 1,
+									refurl.length());
+							if (sharp.indexOf("%") >= 0) {
+								sharp = ""; // Don't know what to do with '%'
+							}
+							refurl = refurl.substring(0, refurl.indexOf("#"));
+						}
+						ret.append("\\hyperref{" + refurl + "}{" + sharp
+								+ "}{}{");
+						// ret.append("\\href{" + refurl + "}{");
 					}
-					ret.append("\\hyperref{" + refurl + "}{" + sharp + "}{}{");
-					// ret.append("\\href{" + refurl + "}{");
 				} else {
 					ret.append("{\\bf ");
 				}
@@ -392,6 +401,15 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 			ret.append("}");
 		} else if (tag == HTML.Tag.A) {
 			if (refurl != null) {
+
+				if (refurl.startsWith("appendix")) {
+
+					ret.append("\\refdefined{" + refurl + "}");
+					ret.append("}");
+
+					return;
+
+				}
 				ret.append("}");
 				if (doPrintURL != null) {
 					if (!refurl.equals("")) {
@@ -400,6 +418,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 						ret.append(")");
 					}
 				}
+
 			} else if (refname != null) {
 				ret.append("}");
 			}
