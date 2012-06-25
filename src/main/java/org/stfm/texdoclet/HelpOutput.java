@@ -66,7 +66,7 @@ public class HelpOutput {
 		System.err
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
 		System.err
-				.println("-imagespath               Path to the texdoclet_images dir (absolute or relative to the output document .tex file).");
+				.println("-imagespath <path>        Path to the texdoclet_images dir (absolute or relative to the output document .tex file).");
 
 	}
 

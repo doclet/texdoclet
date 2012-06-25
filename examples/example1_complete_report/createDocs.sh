@@ -4,7 +4,6 @@ rm texdoclet_output/TeXDoclet.aux
 
 javadoc -docletpath ../../target/TeXDoclet.jar \
 	-doclet org.stfm.texdoclet.TeXDoclet \
-	-noindex \
 	-tree \
 	-hyperref \
 	-texinit texdoclet_include/preamble.tex \
@@ -12,7 +11,7 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-output texdoclet_output/TeXDoclet.tex \
 	-title "TeXDoclet Java Documentation" \
 	-subtitle "Created with Javadoc TeXDoclet Doclet" \
-	-author "Greg Wonderly \and S\"oren Caspersen \and Stefan Marx" \
+	-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx" \
 	-sourcepath ../../src/main/java \
 	-subpackages org \
  	-shortinherited
