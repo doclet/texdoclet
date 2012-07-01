@@ -17,7 +17,7 @@ import javax.swing.text.html.HTML;
  * <br>
  * Here is an example table.
  * <p>
- * <table border bgcolor="#AAAAAA">
+ * <table border bgcolor="#DDDDDD">
  * <tr>
  * <th>Column 1 Heading
  * <th>Column two heading
@@ -31,13 +31,12 @@ import javax.swing.text.html.HTML;
  * <td align=left>left
  * <tr>
  * <td colspan=3>
- * <table border=5 bgcolor="#CCCCCC">
+ * <table border=5 bgcolor="#EEEEEE">
  * <tr>
  * <th colspan=3>A nested table example
  * <tr>
- * <th>Column 1 Heading</th>
- * <th>Coludliadfuapfd a fia fopia foipapio dupoau foapoifd pdpfiu apsd
- * oipoioaofiduaopiufopiiiiiiiiiimn two heading</th>
+ * <th>Column one Heading</th>
+ * <th>Column two heading</th>
  * <th>Column three heading</th>
  * <tr>
  * <td>data</td>
@@ -50,17 +49,17 @@ import javax.swing.text.html.HTML;
  * <td>
  * 
  * <pre>
- *    1
- *  2
+ *  1
+ *   2
  *  3
- *  4
+ *    4
  * </pre>
  * 
  * </td>
  * <td>
  * 
  * <pre>
- *    first line
+ *  first line
  *  second line
  *  third line
  *  fourth line
@@ -176,7 +175,7 @@ public class TableInfo {
 	 *            into.
 	 */
 	public StringBuffer endTable() {
-		originalBuffer.append("\n% Table #" + tblno + "\n");
+		originalBuffer.append("\n% Table #" + tblno + "\n\\begin{center}\n");
 		int col = totalcolcnt;
 		if (col == 0) {
 			col = 1;
@@ -187,7 +186,7 @@ public class TableInfo {
 			originalBuffer.append("\\newlength{\\tbl" + tc + "c" + cc + "w}\n");
 			// originalBuffer.append("\\setlength{\\tbl"+tc+"c"+cc+"w}{"+(1.0/col)+"\\hsize}\n");
 			originalBuffer.append("\\setlength{\\tbl" + tc + "c" + cc + "w}{"
-					+ (1.0 / col) + "\\linewidth}\n");
+					+ (TeXDoclet.tableWidthScale / col) + "\\linewidth}\n");
 		}
 		if (red != -1.0 && green != -1.0 && blue != -1.0) {
 			originalBuffer.append("\\colorbox[rgb]{" + Double.toString(red)
@@ -216,6 +215,7 @@ public class TableInfo {
 			originalBuffer.append("}\n");
 		}
 
+		originalBuffer.append("\\end{center}\n");
 		return originalBuffer;
 	}
 

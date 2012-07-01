@@ -62,11 +62,13 @@ public class HelpOutput {
 		System.err
 				.println("-hr                       Prints horizontal rows in the output (to get a better? view).");
 		System.err
-				.println("-include                  Creates output without latex initiation (writes it in initdocsinclude.tex), titlepage, contents.");
+				.println("-include                  Creates output in two seperated latex documents: one for the preamble part and another for the actual java documentation content.");
 		System.err
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
 		System.err
 				.println("-imagespath <path>        Path to the texdoclet_images dir (absolute or relative to the output document .tex file).");
+		System.err
+				.println("-tablescale <factor>      Scale factor to specify width of tables. Default value is 0.9.");
 
 	}
 

@@ -181,6 +181,7 @@ public class TeXDoclet extends Doclet {
 	static String imagesPath = null;
 	static String subtitle = null;
 	static String introFile = null;
+	static double tableWidthScale = 0.9;
 
 	public static void main(String args[]) {
 
@@ -308,6 +309,8 @@ public class TeXDoclet extends Doclet {
 			return 2;
 		} else if (option.equals("-texintro")) {
 			return 2;
+		} else if (option.equals("-tablescale")) {
+			return 2;
 		}
 		System.out.println("unknown option " + option);
 		return Doclet.optionLength(option);
@@ -405,6 +408,8 @@ public class TeXDoclet extends Doclet {
 				subtitle = args[i][1];
 			} else if (args[i][0].equals("-texintro")) {
 				introFile = args[i][1];
+			} else if (args[i][0].equals("-tablescale")) {
+				tableWidthScale = Double.parseDouble(args[i][1]);
 			}
 
 			if (sectionLevelMax != null
@@ -676,27 +681,43 @@ public class TeXDoclet extends Doclet {
 			os.println("}");
 		}
 
+		addFile(os, finishFile, false);
+
 		if (appendencies.size() > 0) {
-			os.println("\\appendix");
+			// os.println("\\appendix");
+			// Iterator it = appendencies.keySet().iterator();
+			// int i = 0;
+			// while (it.hasNext()) {
+			// os.println("\\" + sectionLevels[0] + "{}{");
+			// os.println(" \\label{appendix" + (i + 1) + "}");
+			// String sfa = (String) it.next();
+			// // System.out.println(sfa);
+			// addFile(os, sfa, true);
+			// os.println("}");
+			// i++;
+			// }
+			os.println("\\begin{appendix}");
 			Iterator it = appendencies.keySet().iterator();
 			int i = 0;
 			while (it.hasNext()) {
-				os.println("\\" + sectionLevels[0] + "{}{");
-				os.println(" \\label{appendix" + (i + 1) + "}");
 				String sfa = (String) it.next();
-				// System.out.println(sfa);
+				File f = new File(sfa);
+				String fname = f.getName().replace("_", "\\_");
+				System.out.println(fname);
+				os.println("\\" + sectionLevels[0] + "{File " + fname + "}{");
+				os.println(" \\label{appendix" + (i + 1) + "}");
+
 				addFile(os, sfa, true);
 				os.println("}");
 				i++;
 			}
+			os.println("\\end{appendix}");
 		}
 
-		os.println("\\markboth{}{}");
+		// os.println("\\markboth{}{}");
 		if (index) {
 			os.println("\\printindex");
 		}
-
-		addFile(os, finishFile, false);
 
 		if (!includeTexOutputInOtherTexFile) {
 			os.println("\\end{document}");
