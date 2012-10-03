@@ -9,6 +9,7 @@ import com.sun.javadoc.ClassDoc;
  * @version $Revision: 1.1 $
  * @author Gregg Wonderly - C2 Technologies Inc.
  */
+@SuppressWarnings("restriction")
 public interface ClassFilter {
 
 	/**

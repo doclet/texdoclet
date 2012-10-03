@@ -16,6 +16,7 @@ import com.sun.javadoc.RootDoc;
  * @version $Revision: 1.1 $
  * @author Soeren Caspersen - XO Software
  */
+@SuppressWarnings("restriction")
 public class ClassHierachy extends java.lang.Object {
 
 	public SortedMap root = new TreeMap();
@@ -57,12 +58,13 @@ public class ClassHierachy extends java.lang.Object {
 	 * Prints a branch of the tree. The branch is printed using
 	 * <CODE>TeXDoclet.os</CODE>.
 	 */
-	protected void printBranch(RootDoc rootDoc, SortedMap map, double indent,
+	protected void printBranch(RootDoc rootDoc,
+			SortedMap<String, SortedMap> map, double indent,
 			double overviewindent) {
-		Set set = map.keySet();
-		Iterator it = set.iterator();
+		Set<String> set = map.keySet();
+		Iterator<String> it = set.iterator();
 		while (it.hasNext()) {
-			String qualifName = (String) it.next();
+			String qualifName = it.next();
 			ClassDoc cls = rootDoc.classNamed(qualifName);
 			TeXDoclet.os.print("\\hspace{" + Double.toString(indent)
 					+ "cm} $\\bullet$ "
@@ -71,8 +73,8 @@ public class ClassHierachy extends java.lang.Object {
 				TeXDoclet.printRef(cls.containingPackage(), cls.name(), "");
 			}
 			TeXDoclet.os.println("} \\\\");
-			printBranch(rootDoc, (SortedMap) map.get(qualifName), indent
-					+ overviewindent, overviewindent);
+			printBranch(rootDoc, map.get(qualifName), indent + overviewindent,
+					overviewindent);
 		}
 	}
 }

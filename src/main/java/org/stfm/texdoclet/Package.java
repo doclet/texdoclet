@@ -19,19 +19,20 @@ import com.sun.javadoc.PackageDoc;
  * @version $Revision: 1.1 $
  * @author Gregg Wonderly - C2 Technologies Inc.
  */
+@SuppressWarnings("restriction")
 public class Package {
 
 	protected PackageDoc pkgDoc;
 	/** The name of the package this object is for */
 	protected String pkg;
 	/** The classes this package has in it */
-	protected Vector classes;
+	protected Vector<ClassDoc> classes;
 	/** The interfaces this package has in it */
-	protected Vector interfaces;
+	protected Vector<ClassDoc> interfaces;
 	/** The exceptions this package has in it */
-	protected Vector exceptions;
+	protected Vector<ClassDoc> exceptions;
 	/** The errors this package has in it */
-	protected Vector errors;
+	protected Vector<ClassDoc> errors;
 
 	/**
 	 * Construct a new object corresponding to the passed package name.
@@ -45,10 +46,10 @@ public class Package {
 		if (pkg.equals("")) {
 			this.pkg = "<none>";
 		}
-		classes = new Vector();
-		interfaces = new Vector();
-		exceptions = new Vector();
-		errors = new Vector();
+		classes = new Vector<ClassDoc>();
+		interfaces = new Vector<ClassDoc>();
+		exceptions = new Vector<ClassDoc>();
+		errors = new Vector<ClassDoc>();
 	}
 
 	/**

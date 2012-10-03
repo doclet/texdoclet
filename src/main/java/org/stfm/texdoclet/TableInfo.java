@@ -1,7 +1,5 @@
 package org.stfm.texdoclet;
 
-import java.util.Properties;
-
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 
@@ -81,17 +79,14 @@ public class TableInfo {
 	private int rowcnt = 0;
 	private int totalcolcnt = 0;
 	private boolean border = false;
-	private Properties props;
 	private int bordwid;
 	private boolean parboxed;
 	private double red = -1.0;
 	private double blue = -1.0;
 	private double green = -1.0;
-	static int tblcnt;
-	int tblno;
-	String tc;
-
-	HTML.Tag lastTag;
+	private static int tblcnt;
+	private int tblno;
+	private String tc;
 
 	int hasNumAttr(HTML.Attribute attr, MutableAttributeSet attrSet) {
 		String val = (String) attrSet.getAttribute(attr);
