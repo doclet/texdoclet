@@ -90,9 +90,10 @@ import com.sun.javadoc.Type;
  * src="http://upload.wikimedia.org/wikipedia/commons/9/92/LaTeX_logo.svg">
  * </dl>
  * 
- * <H3>Extra tags</H3> A new tag is defined: <CODE>&lt;TEX&gt;</CODE>. This tag
- * is useful for passing <TEX txt="\TeX{}">TeX</TEX> code directly to the <TEX
- * txt="\TeX{}">TeX</TEX> compiler. The following code:
+ * <H3>Extra tags</H3> <H4>&lt;TEX&gt;</H4> A new tag is defined:
+ * <CODE>&lt;TEX&gt;</CODE>. This tag is useful for passing <TEX
+ * txt="\TeX{}">TeX</TEX> code directly to the <TEX txt="\TeX{}">TeX</TEX>
+ * compiler. The following code:
  * 
  * <PRE>
  * 
@@ -111,12 +112,74 @@ import com.sun.javadoc.Type;
  * </TEX> The "alternative" text is ignored by the TeXDoclet, but useful if you
  * want to use both the TeXDoclet and a regular HTML based doclet.
  * 
+ * <H4>&lt;PRE format="markdown"&gt;</H4>
+ * 
+ * Instead of writing your java documentation in often hard to read HTML code
+ * you can make use of <a
+ * href="http://en.wikipedia.org/wiki/Markdown">Markdown</a> syntax. The HTML
+ * <code>&lt;PRE&gt;</code> tag is used therefore to prevent your IDE from
+ * automatically reordering your Markdown documentation text. Markdown parsing
+ * is based on the <a href="https://github.com/sirthias/pegdown">Pegdown</a>
+ * implementation. The following code :
+ * 
+ * <PRE>
+ * 
+ * &lt;PRE format="markdown"&gt;
+ * 
+ * some text some text some text some text some text some text some text 
+ * 
+ * ##### Lists
+ * 
+ * - item1
+ *     1. item11
+ *     2. item12
+ * - item1
+ * 
+ * ##### Text formatting
+ * 
+ * _emphasis_ and __strong__ and some `code` :
+ * 
+ *     code line 1
+ *     code line 2
+ *     
+ * some text some text some text some text some text some text some text
+ * 
+ * &lt;PRE&gt;
+ * 
+ * </PRE>
+ * 
+ * will produce the following : <br>
+ * <p>
+ * 
+ * <PRE format="md">
+ * 
+ * some text some text some text some text some text some text some text 
+ * 
+ * ##### Lists
+ * 
+ * - item1
+ *     1. item11
+ *     2. item12
+ * - item1
+ * 
+ * ##### Text formatting
+ * 
+ * _emphasis_ and __strong__ and some `code` :
+ * 
+ *     code line 1
+ *     code line 2
+ *     
+ * some text some text some text some text some text some text some text
+ * 
+ * </PRE>
+ * 
  * @see HTMLtoLaTeXBackEnd
  * @see #start(RootDoc) start
  * @author Gregg Wonderly - C2 Technologies Inc.
  * @author Soeren Caspersen - XO Software.
  * @author Stefan Marx
  */
+@SuppressWarnings("restriction")
 public class TeXDoclet extends Doclet {
 
 	private static final String OUT_FILENAME_DOCS_TEX = "docs.tex";
@@ -137,8 +200,8 @@ public class TeXDoclet extends Doclet {
 	/** Writer for writing to output file */
 	public static PrintWriter os = null;
 	static boolean inherited = true;
-	static Hashtable map2;
-	static Vector map;
+	static Hashtable<String, Package> map2;
+	static Vector<Package> map;
 	static ClassFilter clsFilt;
 	static RootDoc theroot;
 	static String docclass = "report";
@@ -162,9 +225,9 @@ public class TeXDoclet extends Doclet {
 	static String packageFile = "docpackage.tex";
 	static String preambleFile = "docinit.tex";
 	static File packageDir = null;
-	static Hashtable appendencies = new Hashtable();
-	static Hashtable refs = new Hashtable();
-	static Hashtable externalrefs = new Hashtable();
+	static Hashtable<String, String> appendencies = new Hashtable<String, String>();
+	static Hashtable<String, Hashtable<?, ?>> refs = new Hashtable<String, Hashtable<?, ?>>();
+	static Hashtable<String, Hashtable<?, ?>> externalrefs = new Hashtable<String, Hashtable<?, ?>>();
 
 	static boolean includeTexOutputInOtherTexFile = false;
 	static String sectionLevelMax = null;
@@ -382,7 +445,7 @@ public class TeXDoclet extends Doclet {
 					FileInputStream in = new FileInputStream(args[i][2]
 							+ ".map");
 					ObjectInputStream p = new ObjectInputStream(in);
-					Hashtable exref = (Hashtable) p.readObject();
+					Hashtable<?, ?> exref = (Hashtable<?, ?>) p.readObject();
 					externalrefs.put(args[i][1], exref);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -428,8 +491,8 @@ public class TeXDoclet extends Doclet {
 
 	public static void init() {
 
-		map2 = new Hashtable();
-		map = new Vector();
+		map2 = new Hashtable<String, Package>();
+		map = new Vector<Package>();
 		try {
 			os = new PrintWriter(new FileWriter(outfile));
 		} catch (Exception ex) {
@@ -559,8 +622,6 @@ public class TeXDoclet extends Doclet {
 
 		ClassDoc[] cls = root.classes();
 
-		ExecutableMemberDoc[] mems;
-
 		PackageDoc[] specifiedPackages = root.specifiedPackages();
 		System.out.println("specifiedPackages : " + specifiedPackages.length);
 		for (int i = 0; i < specifiedPackages.length; i++) {
@@ -586,7 +647,7 @@ public class TeXDoclet extends Doclet {
 			Package v;
 			PackageDoc pkgDoc = cd.containingPackage();
 			String pkg = pkgDoc.name();
-			if ((v = (Package) map2.get(pkg)) == null) {
+			if ((v = map2.get(pkg)) == null) {
 				v = new Package(pkg, pkgDoc);
 				map2.put(pkg, v);
 				map.add(v);
@@ -595,9 +656,9 @@ public class TeXDoclet extends Doclet {
 		}
 
 		// Sorting
-		Enumeration h = map.elements();
+		Enumeration<Package> h = map.elements();
 		while (h.hasMoreElements()) {
-			final Package pkg = (Package) h.nextElement();
+			final Package pkg = h.nextElement();
 			pkg.sort();
 		}
 
@@ -614,9 +675,9 @@ public class TeXDoclet extends Doclet {
 
 		// Packages
 
-		Enumeration e = map.elements();
+		Enumeration<Package> e = map.elements();
 		while (e.hasMoreElements()) {
-			final Package pkg = (Package) e.nextElement();
+			final Package pkg = e.nextElement();
 
 			// os.println( "\\newpage" );
 
@@ -697,10 +758,10 @@ public class TeXDoclet extends Doclet {
 			// i++;
 			// }
 			os.println("\\begin{appendix}");
-			Iterator it = appendencies.keySet().iterator();
+			Iterator<String> it = appendencies.keySet().iterator();
 			int i = 0;
 			while (it.hasNext()) {
-				String sfa = (String) it.next();
+				String sfa = it.next();
 				File f = new File(sfa);
 				String fname = f.getName().replace("_", "\\_");
 				System.out.println(fname);
@@ -888,7 +949,7 @@ public class TeXDoclet extends Doclet {
 	/**
 	 * Produces a table-of-contents for classes.
 	 */
-	static void tocForClasses(String title, Vector v) {
+	static void tocForClasses(String title, Vector<ClassDoc> v) {
 		if (v.size() > 0) {
 			os.println("\\vskip .13in");
 
@@ -896,7 +957,7 @@ public class TeXDoclet extends Doclet {
 					+ HTMLtoLaTeXBackEnd.fixText(title) + "}}");
 
 			for (int i = 0; i < v.size(); ++i) {
-				ClassDoc cd = (ClassDoc) v.elementAt(i);
+				ClassDoc cd = v.elementAt(i);
 				os.print("\\entityintro{"
 						+ HTMLtoLaTeXBackEnd.fixText(cd.name()) + "}" + "{"
 						+ refName(makeRefKey(cd.qualifiedName())) + "}" + "{");
@@ -925,11 +986,11 @@ public class TeXDoclet extends Doclet {
 
 		// Classes
 		ClassHierachy classHierachy = new ClassHierachy();
-		Enumeration f = map.elements();
+		Enumeration<Package> f = map.elements();
 		while (f.hasMoreElements()) {
-			final Package pkg = (Package) f.nextElement();
+			final Package pkg = f.nextElement();
 			for (int i = 0; i < pkg.classes.size(); i++) {
-				classHierachy.add((ClassDoc) pkg.classes.get(i));
+				classHierachy.add(pkg.classes.get(i));
 			}
 		}
 		if (classHierachy.root.size() != 0) {
@@ -947,9 +1008,9 @@ public class TeXDoclet extends Doclet {
 		InterfaceHierachy interfaceHierachy = new InterfaceHierachy();
 		f = map.elements();
 		while (f.hasMoreElements()) {
-			final Package pkg = (Package) f.nextElement();
+			final Package pkg = f.nextElement();
 			for (int i = 0; i < pkg.interfaces.size(); i++) {
-				interfaceHierachy.add((ClassDoc) pkg.interfaces.get(i));
+				interfaceHierachy.add(pkg.interfaces.get(i));
 			}
 		}
 		if (interfaceHierachy.root.size() != 0) {
@@ -961,9 +1022,9 @@ public class TeXDoclet extends Doclet {
 		ClassHierachy exceptionHierachy = new ClassHierachy();
 		f = map.elements();
 		while (f.hasMoreElements()) {
-			final Package pkg = (Package) f.nextElement();
+			final Package pkg = f.nextElement();
 			for (int i = 0; i < pkg.exceptions.size(); i++) {
-				exceptionHierachy.add((ClassDoc) pkg.exceptions.get(i));
+				exceptionHierachy.add(pkg.exceptions.get(i));
 			}
 		}
 		if (exceptionHierachy.root.size() != 0) {
@@ -975,9 +1036,9 @@ public class TeXDoclet extends Doclet {
 		ClassHierachy errorHierachy = new ClassHierachy();
 		f = map.elements();
 		while (f.hasMoreElements()) {
-			final Package pkg = (Package) f.nextElement();
+			final Package pkg = f.nextElement();
 			for (int i = 0; i < pkg.errors.size(); i++) {
-				errorHierachy.add((ClassDoc) pkg.errors.get(i));
+				errorHierachy.add(pkg.errors.get(i));
 			}
 		}
 		if (errorHierachy.root.size() != 0) {
@@ -997,9 +1058,9 @@ public class TeXDoclet extends Doclet {
 	 * @param classes
 	 *            Vector of the classes to be laid out.
 	 */
-	static void layoutClasses(String type, Vector classes) {
+	static void layoutClasses(String type, List<ClassDoc> classes) {
 		for (int i = 0; i < classes.size(); ++i) {
-			ClassDoc cd = (ClassDoc) classes.elementAt(i);
+			ClassDoc cd = classes.get(i);
 			// os.println(
 			// "\\gdef\\classname{"+HTMLtoLaTeXBackEnd.fixText(cd.name())+"}" );
 
@@ -1207,8 +1268,6 @@ public class TeXDoclet extends Doclet {
 
 			if (inherited == true) {
 
-				boolean yet = false;
-
 				if (!cd.isInterface()) {
 
 					ClassDoc par = cd.superclass();
@@ -1223,7 +1282,7 @@ public class TeXDoclet extends Doclet {
 
 				} else {
 
-					List superclasses = new Vector();
+					List<ClassDoc> superclasses = new Vector<ClassDoc>();
 					while (getSuperClass(cd, superclasses) != null) {
 					}
 
@@ -1231,7 +1290,7 @@ public class TeXDoclet extends Doclet {
 
 					for (int m = superclasses.size() - 1; m >= 0; m--) {
 
-						ClassDoc par = (ClassDoc) superclasses.get(m);
+						ClassDoc par = superclasses.get(m);
 
 						printInherited(par);
 
@@ -1251,7 +1310,7 @@ public class TeXDoclet extends Doclet {
 	 * subsclass, that is not already in the list of superclasses adn adds it to
 	 * the list if found
 	 */
-	static ClassDoc getSuperClass(ClassDoc subclass, List superclasses) {
+	static ClassDoc getSuperClass(ClassDoc subclass, List<ClassDoc> superclasses) {
 		ClassDoc[] cls = theroot.classes();
 		for (int n = 0; n < cls.length; ++n) {
 			ClassDoc cd2 = cls[n];
@@ -1265,16 +1324,16 @@ public class TeXDoclet extends Doclet {
 		return null;
 	}
 
-	static List sortSuperclasses(List superclasses) {
-		List result = new Vector();
+	static List<ClassDoc> sortSuperclasses(List<ClassDoc> superclasses) {
+		List<ClassDoc> result = new Vector<ClassDoc>();
 		int count = superclasses.size();
 
 		for (int k = 0; k < count; k++) {
 			for (int i = 0; i < superclasses.size(); i++) {
-				ClassDoc cd = (ClassDoc) superclasses.get(i);
+				ClassDoc cd = superclasses.get(i);
 				boolean isSubInterface = false;
 				for (int j = 0; j < superclasses.size(); j++) {
-					ClassDoc cd2 = (ClassDoc) superclasses.get(j);
+					ClassDoc cd2 = superclasses.get(j);
 					if (cd.subclassOf(cd2) && cd != cd2) {
 						isSubInterface = true;
 						break;
@@ -1379,12 +1438,11 @@ public class TeXDoclet extends Doclet {
 		}
 		os.println("\\" + sectionLevels[2] + "{" + title + "}{");
 		os.println("\\begin{verse}");
-		boolean first = true;
-		List l = Arrays.asList(dmems);
+		List<ExecutableMemberDoc> l = Arrays.asList(dmems);
 		Collections.sort(l);
-		Iterator itr = l.iterator();
+		Iterator<ExecutableMemberDoc> itr = l.iterator();
 		for (int i = 0; itr.hasNext(); ++i) {
-			ExecutableMemberDoc mem = (ExecutableMemberDoc) itr.next();
+			ExecutableMemberDoc mem = itr.next();
 			if (hyperref) {
 				os.print("\\hyperlink{"
 						+ refName(makeRefKey(mem.qualifiedName()
@@ -1418,12 +1476,11 @@ public class TeXDoclet extends Doclet {
 		}
 		os.println("\\" + sectionLevels[2] + "{" + title + "}{");
 		os.println("\\begin{verse}");
-		boolean first = true;
-		List l = Arrays.asList(dmems);
+		List<FieldDoc> l = Arrays.asList(dmems);
 		Collections.sort(l);
-		Iterator itr = l.iterator();
+		Iterator<FieldDoc> itr = l.iterator();
 		for (int i = 0; itr.hasNext(); ++i) {
-			FieldDoc mem = (FieldDoc) itr.next();
+			FieldDoc mem = itr.next();
 			if (hyperref) {
 				os.print("\\hyperlink{"
 						+ refName(makeRefKey(mem.qualifiedName())) + "}{");
@@ -1452,13 +1509,13 @@ public class TeXDoclet extends Doclet {
 		if (useHr) {
 			os.println("\\rule[1em]{\\hsize}{2pt}\\vskip -2em");
 		}
-		List l = Arrays.asList(dmems);
+		List<ExecutableMemberDoc> l = Arrays.asList(dmems);
 		Collections.sort(l);
-		Iterator itr = l.iterator();
+		Iterator<ExecutableMemberDoc> itr = l.iterator();
 		os.println("\\vskip -2em");
 		os.println("\\begin{itemize}");
 		for (int i = 0; itr.hasNext(); ++i) {
-			ExecutableMemberDoc mem = (ExecutableMemberDoc) itr.next();
+			ExecutableMemberDoc mem = itr.next();
 
 			if (i > 0) {
 				if (useHr) {
@@ -1794,14 +1851,14 @@ public class TeXDoclet extends Doclet {
 		if (useHr) {
 			os.println("\\rule[1em]{\\hsize}{2pt}\\vskip -2em");
 		}
-		List l = Arrays.asList(dmems);
+		List<MemberDoc> l = Arrays.asList(dmems);
 		Collections.sort(l);
-		Iterator itr = l.iterator();
+		Iterator<MemberDoc> itr = l.iterator();
 
 		if (shortInheritance) {
 
 			for (int i = 0; itr.hasNext(); ++i) {
-				MemberDoc mem = (MemberDoc) itr.next();
+				MemberDoc mem = itr.next();
 
 				// print only member names
 				if (i != 0) {
@@ -1817,7 +1874,7 @@ public class TeXDoclet extends Doclet {
 			os.println("\\vskip -2em");
 			os.println("\\begin{itemize}");
 			for (int i = 0; itr.hasNext(); ++i) {
-				MemberDoc mem = (MemberDoc) itr.next();
+				MemberDoc mem = itr.next();
 
 				// Print signature
 

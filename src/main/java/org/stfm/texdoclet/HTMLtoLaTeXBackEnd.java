@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Hashtable;
+import java.util.Scanner;
 import java.util.Stack;
 
 import javax.swing.ImageIcon;
@@ -21,6 +22,7 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
+import com.github.rjeschke.txtmark.Processor;
 import com.keypoint.PngEncoder;
 
 /**
@@ -40,6 +42,9 @@ import com.keypoint.PngEncoder;
  */
 public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 
+	private static final String MARKDOWN1 = "md";
+	private static final String MARKDOWN2 = "markdown";
+
 	private static final String IMAGES_DIR = "texdoclet_images";
 
 	/**
@@ -47,11 +52,11 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	 */
 	StringBuffer ret;
 
-	Stack tblstk = new Stack();
+	Stack<TableInfo> tblstk = new Stack<TableInfo>();
 	TableInfo tblinfo;
 	int verbat = 0;
 	int colIdx = 0;
-	Hashtable colors = new Hashtable(10);
+	Hashtable<String, String> colors = new Hashtable<String, String>(10);
 	String block = "";
 	String refurl = null;
 	String doPrintURL = null;
@@ -59,6 +64,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	String refimg = null;
 	boolean notex = false;
 	int imageindex = 0;
+	boolean inPreMarkdown = false;
 
 	/**
 	 * Constructs a new instance.
@@ -78,8 +84,6 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	@Override
 	public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attrSet,
 			int pos) {
-		String str = null;
-		int i = 0;
 		if (tag.toString().equalsIgnoreCase("tex")) {
 			if (attrSet.containsAttribute(HTML.Attribute.ENDTAG, "true")) {
 				notex = false;
@@ -210,13 +214,16 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	@Override
 	public void handleStartTag(HTML.Tag tag, MutableAttributeSet attrSet,
 			int pos) {
-		String str = null;
-		int i = 0;
 		if (notex) {
 			return;
 		} else if (tag == HTML.Tag.PRE) {
-			ret.append(TeXDoclet.TRUETYPE + "\\small\n\\mbox{}\\newline ");
-			verbat++;
+			if (attrSet.containsAttribute("format", MARKDOWN1)
+					|| attrSet.containsAttribute("format", MARKDOWN2)) {
+				inPreMarkdown = true;
+			} else {
+				ret.append(TeXDoclet.TRUETYPE + "\\small\n\\mbox{}\\newline ");
+				verbat++;
+			}
 		} else if (tag == HTML.Tag.H1) {
 			ret.append("\\chapter*{");
 		} else if (tag == HTML.Tag.H2) {
@@ -261,8 +268,8 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 						File file = new File(TeXDoclet.packageDir, refurl);
 						if (file.exists()) {
 							if (TeXDoclet.appendencies.contains(file.getPath())) {
-								refurl = (String) TeXDoclet.appendencies
-										.get(file.getPath());
+								refurl = TeXDoclet.appendencies.get(file
+										.getPath());
 							} else {
 								refurl = "appendix"
 										+ new Integer(
@@ -312,6 +319,8 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 			ret.append("\\begin{itemize}");
 		} else if (tag == HTML.Tag.I) {
 			ret.append(TeXDoclet.ITALIC + " ");
+		} else if (tag == HTML.Tag.EM) {
+			ret.append(TeXDoclet.ITALIC + " ");
 		} else if (tag == HTML.Tag.TABLE) {
 			tblstk.push(tblinfo);
 			tblinfo = new TableInfo();
@@ -323,7 +332,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 		} else if (tag == HTML.Tag.TR) {
 			tblinfo.startRow(attrSet);
 		} else if (tag == HTML.Tag.FONT) {
-			String sz = (String) attrSet.getAttribute(HTML.Attribute.SIZE);
+			// String sz = (String) attrSet.getAttribute(HTML.Attribute.SIZE);
 			String col = (String) attrSet.getAttribute(HTML.Attribute.COLOR);
 			ret.append("{");
 			if (col != null) {
@@ -332,8 +341,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 				} else {
 					if ("abcdefABCDEF0123456789".indexOf(col.charAt(0)) != -1) {
 						Color cc = new Color((int) Long.parseLong(col, 16));
-						String name = (String) colors
-								.get("color" + cc.getRGB());
+						String name = colors.get("color" + cc.getRGB());
 						if (name == null) {
 							ret.append("\\definecolor{color" + colIdx
 									+ "}[rgb]{" + (cc.getRed() / 255.0) + ","
@@ -358,13 +366,15 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	 */
 	@Override
 	public void handleEndTag(HTML.Tag tag, int pos) {
-		int i = 0;
-
 		if (notex) {
 			return;
 		} else if (tag == HTML.Tag.PRE) {
-			verbat--;
-			ret.append("}\n");
+			if (!inPreMarkdown) {
+				verbat--;
+				ret.append("}\n");
+			} else {
+				inPreMarkdown = false;
+			}
 		} else if (tag == HTML.Tag.H1) {
 			ret.append("}");
 		} else if (tag == HTML.Tag.H2) {
@@ -437,9 +447,11 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 			ret.append("\n\\end{itemize}\n");
 		} else if (tag == HTML.Tag.I) {
 			ret.append("}");
+		} else if (tag == HTML.Tag.EM) {
+			ret.append("}");
 		} else if (tag == HTML.Tag.TABLE) {
 			ret = tblinfo.endTable();
-			tblinfo = (TableInfo) tblstk.pop();
+			tblinfo = tblstk.pop();
 		} else if (tag == HTML.Tag.TH) {
 			tblinfo.endCol();
 		} else if (tag == HTML.Tag.TD) {
@@ -457,6 +469,50 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	@Override
 	public void handleText(char[] data, int pos) {
 		String str = new String(data);
+
+		if (inPreMarkdown) {
+
+			String html = "";
+
+			// usually java documentation has a leading space character in each
+			// line
+			// that is to remove for markdown processing !
+			if (str.startsWith(" ")) {
+				str = removeLeadingSpaces(str);
+			}
+
+			// test some Markdown processors here :
+
+			// 1. MarkdownJ
+
+			// MarkdownProcessor m = new MarkdownProcessor();
+			// html = m.markdown(str);
+
+			// 2. PegDown
+
+			// PegDownProcessor pp = new PegDownProcessor();
+			// html = pp.markdownToHtml(str);
+
+			// 3. MarkdownPapers
+
+			// Markdown md = new Markdown();
+			// StringWriter sw = new StringWriter();
+			// try {
+			// md.transform(new StringReader(str), sw);
+			// } catch (org.tautua.markdownpapers.parser.ParseException e) {
+			// e.printStackTrace();
+			// }
+			// html = sw.toString();
+
+			// 4. Txtmark
+
+			html = Processor.process(str);
+
+			String toAppend = HTMLtoLaTeXBackEnd.fixText(html);
+			ret.append(toAppend);
+			return;
+		}
+
 		for (int i = 0; i < str.length(); ++i) {
 			int c = str.charAt(i);
 			if (notex) {
@@ -619,6 +675,20 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 		} catch (IOException e) {
 		}
 		return new String(result);
+	}
+
+	private String removeLeadingSpaces(String str) {
+		StringBuffer sb = new StringBuffer();
+		Scanner scanner = new Scanner(str);
+		while (scanner.hasNextLine()) {
+			String l = scanner.nextLine();
+			if (l.startsWith(" ")) {
+				sb.append(l.substring(1) + System.getProperty("line.separator"));
+			} else {
+				sb.append(l + System.getProperty("line.separator"));
+			}
+		}
+		return sb.toString();
 	}
 
 }

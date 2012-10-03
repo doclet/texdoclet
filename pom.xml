@@ -21,12 +21,47 @@
 
 	</properties>
 	
+	<repositories>
+	    <repository>
+	        <id>scala-tools</id>
+	        <url>http://scala-tools.org/repo-releases</url>
+	    </repository>
+	    <repository>
+		  <id>renejeschke-releases</id>
+		  <url>http://maven.renejeschke.de</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.keypoint</groupId>
 			<artifactId>png-encoder</artifactId>
 			<version>1.5</version>
 		</dependency>
+		
+		<!-- some mark down processors -->
+		
+		<!--<dependency>
+			<groupId>org.markdownj</groupId>
+			<artifactId>markdownj</artifactId>
+			<version>0.3.0-1.0.2b4</version>
+		</dependency>-->
+		<!--<dependency>
+			<groupId>org.pegdown</groupId>
+			<artifactId>pegdown</artifactId>
+			<version>1.1.0</version>
+		</dependency>-->
+		<!--<dependency>
+		    <groupId>org.tautua.markdownpapers</groupId>
+		    <artifactId>markdownpapers-core</artifactId>
+		    <version>1.2.7</version>
+		</dependency>-->
+		<dependency>
+		  <groupId>com.github.rjeschke</groupId>
+		  <artifactId>txtmark</artifactId>
+		  <version>0.7</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
