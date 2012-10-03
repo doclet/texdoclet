@@ -12,7 +12,7 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-title "TeXDoclet Java Documentation" \
 	-subtitle "Created with Javadoc TeXDoclet Doclet" \
 	-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx" \
-	-sourcepath ../../src/main/java \
+	-sourcepath ../../src/main/java:../../src/test/java \
 	-subpackages org \
  	-shortinherited
 
