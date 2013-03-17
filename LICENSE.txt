@@ -1,0 +1,26 @@
+
+Most portions of TeXDoclet are based on works by others. The initial project by Greg Wonderly (http://java.net/projects/texdoclet) is available for use under the 2-clause BSD license (http://opensource.org/licenses/BSD-2-Clause).
+
+This TeXDoclet project currently uses the following software in binary form :
+
+- PngEncoder (http://catcode.com/pngencoder/) which is distributed under the Lesser Gnu Public License (LGPL) (http://www.gnu.org/licenses/lgpl-3.0)
+
+- Txtmark Java markdown processor (https://github.com/rjeschke/txtmark) which is distributed under the Apache License Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html)
+
+
+This present TeXDoclet redistribution is free software and available under the terms of BSD-2-Clause
+open source license (http://opensource.org/licenses/BSD-2-Clause) :
+
+--- begin of LICENSE ---
+
+Copyright (c) 2012-2013, Stefan Marx
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+--- end of LICENSE ---
