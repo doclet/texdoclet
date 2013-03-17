@@ -53,3 +53,8 @@ Previous versions
 
 - The intitial project of Greg Wonderly is available here : <http://java.net/projects/texdoclet>.
 - Its [revision](http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet/1.3/share/README.txt) by Soeren Caspersen you find here : <http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet>.
+
+License
+-----------------
+
+TeXDoclet is free software and available under the terms of [BSD-2-Clause](http://opensource.org/licenses/BSD-2-Clause) License. For more information see LICENSE.txt.
