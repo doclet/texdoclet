@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<document>
+	<properties>
+		<title>TeXDoclet</title>
+	</properties>
+	<body>
+		(This is just a test page for the correct generation / integration of Java Doc PDF document)
+		<section name="Java Doc - PDF">
+			<ul>
+				<li><a href="apidocs_tex/TeXDoclet.pdf">link to TeXDoclet.pdf</a>
+				</li>
+			</ul>
+			<object data="apidocs_tex/TeXDoclet.pdf" type="application/pdf" width="800px" height="600px"></object>
+		</section>
+		<section name="Java Doc - HTML">
+			<ul>
+				<li><a href="apidocs_html/index.html">link to Html</a>
+				</li>
+			</ul>
+		</section>
+	</body>
+</document>
