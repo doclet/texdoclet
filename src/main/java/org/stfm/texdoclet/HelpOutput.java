@@ -3,18 +3,18 @@ package org.stfm.texdoclet;
 public class HelpOutput {
 
 	protected static void printHelp() {
+		try {
+			throw new Exception("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		System.err.println("TeXDoclet Usage:");
 		System.err
 				.println("-title <title>            A title to use for the generated output document.");
 		System.err
-				.println("-subtitle <title>         A subtitle for the output document.");
+				.println("-subtitle <title>         A subtitle for the output document. No -title will result in no title page.");
 		System.err
-				.println("                          No -title will result in no title page.");
-		System.err
-				.println("-output <outfile>         Specifies the output file to write to.  If none");
-		System.err
-				.println("                          specified, the default is docs.tex in the current");
-		System.err.println("                          directory.");
+				.println("-output <outfile>         Specifies the output file to write to. Default is docs.tex in the current directory.");
 		System.err
 				.println("-docclass <class>         LaTeX2e document class, `report' is the default.");
 		System.err
@@ -66,10 +66,11 @@ public class HelpOutput {
 		System.err
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
 		System.err
-				.println("-imagespath <path>        Path to the texdoclet_images dir (absolute or relative to the output document .tex file).");
+				.println("-imagespath <path>        Path to 'texdoclet_images' dir that is created by TeXDoclet to hold referenced images (absolute or relative to the output document .tex file).");
 		System.err
 				.println("-tablescale <factor>      Scale factor to specify width of tables. Default value is 0.9.");
-
+		System.err
+				.println("-createpdf                Calles pdflatex to create a .pdf fiele from the .tex output file.");
 	}
 
 }

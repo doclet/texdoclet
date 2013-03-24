@@ -36,6 +36,7 @@ import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.ThrowsTag;
 import com.sun.javadoc.Type;
+import com.sun.tools.doclets.standard.Standard;
 
 /**
  * This class provides a Java <code>javadoc</code> Doclet which generates a <TEX
@@ -182,6 +183,9 @@ import com.sun.javadoc.Type;
 @SuppressWarnings("restriction")
 public class TeXDoclet extends Doclet {
 
+	private static final String PDFLATEX_CMD = "pdflatex -interaction=nonstopmode ";
+	private static final int PDFLATEX_ITERATIONS = 2;
+
 	private static final String OUT_FILENAME_DOCS_TEX = "docs.tex";
 	private static final String OUT_PREAMBLE_SUFFIX = "_preamble";
 
@@ -245,18 +249,11 @@ public class TeXDoclet extends Doclet {
 	static String subtitle = null;
 	static String introFile = null;
 	static double tableWidthScale = 0.9;
+	static boolean createPdf = false;
 
 	public static void main(String args[]) {
 
-		// print help :
-
-		if (args.length == 1
-				&& (args[0].equals("-h") || args[0].equals("--help"))) {
-			HelpOutput.printHelp();
-			return;
-		}
-
-		// or call javadoc :
+		// call javadoc
 
 		try {
 
@@ -269,26 +266,14 @@ public class TeXDoclet extends Doclet {
 			argsJd[3] = TeXDoclet.class.getName();
 			System.arraycopy(args, 0, argsJd, 4, args.length);
 
-			System.out
-					.println("javadoc arguments : " + Arrays.toString(argsJd));
-			String argsString = Arrays.toString(argsJd);
-			argsString = argsString.substring(1, argsString.length() - 1)
-					.replace(",", "");
-			System.out.println("command to execute : " + "javadoc "
-					+ argsString);
-
 			// TODO something goes wrong here. javadoc always prints help
 			// output.
 
-			Process p = Runtime.getRuntime().exec("javadoc", argsJd);
-			p.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
-			String line = reader.readLine();
-			while (line != null) {
-				System.out.println(line);
-				line = reader.readLine();
-			}
+			// execute("javadoc", argsJd);
+			execute("javadoc "
+					+ Arrays.toString(argsJd).replace(", ", " ")
+							.replaceAll("[\\[\\]]", ""), null, false);
+
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (InterruptedException e2) {
@@ -300,8 +285,8 @@ public class TeXDoclet extends Doclet {
 	}
 
 	/**
-	 * Returns how many arguments would be consumed if <code>option</code> is a
-	 * recognized option.
+	 * Doclet class method that returns how many arguments would be consumed if
+	 * <code>option</code> is a recognized option.
 	 * 
 	 * @param option
 	 *            the option to check
@@ -374,13 +359,18 @@ public class TeXDoclet extends Doclet {
 			return 2;
 		} else if (option.equals("-tablescale")) {
 			return 2;
+		} else if (option.equals("-createpdf")) {
+			return 1;
 		}
-		System.out.println("unknown option " + option);
+		System.out.println("unknown TeXDoclet option " + option);
+
+		// return Standard.optionLength(option);
 		return Doclet.optionLength(option);
 	}
 
 	/**
-	 * Checks the passed options and their arguments for validity.
+	 * Doclet class method that checks the passed options and their arguments
+	 * for validity.
 	 * 
 	 * @param args
 	 *            the arguments to check
@@ -473,6 +463,8 @@ public class TeXDoclet extends Doclet {
 				introFile = args[i][1];
 			} else if (args[i][0].equals("-tablescale")) {
 				tableWidthScale = Double.parseDouble(args[i][1]);
+			} else if (args[i][0].equals("-createpdf")) {
+				createPdf = true;
 			}
 
 			if (sectionLevelMax != null
@@ -486,90 +478,16 @@ public class TeXDoclet extends Doclet {
 
 		}
 		System.out.println("args parsed");
-		return true;
-	}
 
-	public static void init() {
-
-		map2 = new Hashtable<String, Package>();
-		map = new Vector<Package>();
-		try {
-			os = new PrintWriter(new FileWriter(outfile));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		try {
-			if (includeTexOutputInOtherTexFile) {
-				outfilePreamble = outfile
-						.substring(0, outfile.lastIndexOf("."))
-						+ OUT_PREAMBLE_SUFFIX + ".tex";
-				osPreamble = new PrintWriter(new FileWriter(outfilePreamble));
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		initSections();
-	}
-
-	public static void initSections() {
-		if (sectionLevelMax == null) {
-			if (!includeTexOutputInOtherTexFile) {
-				if (docclass.equals("scrreprt") || docclass.equals("report")) {
-					sectionLevelMax = CHAPTER_LEVEL;
-				} else if (docclass.equals("scrartcl")
-						|| docclass.equals("article")) {
-					sectionLevelMax = SECTION_LEVEL;
-				} else {
-					sectionLevelMax = SECTION_LEVEL;
-				}
-			} else {
-				sectionLevelMax = SECTION_LEVEL;
-			}
-		}
-
-		if (sectionLevelMax.equals(CHAPTER_LEVEL)) {
-			sectionLevels[0] = "chapter";
-			sectionLevels[1] = "section";
-			sectionLevels[2] = "subsection";
-		} else if (sectionLevelMax.equals(SECTION_LEVEL)) {
-			sectionLevels[0] = "section";
-			sectionLevels[1] = "subsection";
-			sectionLevels[2] = "subsubsection";
-		} else if (sectionLevelMax.equals(SUBSECTION_LEVEL)) {
-			sectionLevels[0] = "subsection";
-			sectionLevels[1] = "subsubsection";
-			sectionLevels[2] = "subsubsection";
-		}
-	}
-
-	public static void finish() {
-		if (os != null) {
-			try {
-				os.close();
-			} catch (Exception ex) {
-			}
-		}
-		if (osPreamble != null) {
-			try {
-				osPreamble.close();
-			} catch (Exception ex) {
-			}
-		}
-		try {
-			FileOutputStream ostream = new FileOutputStream(outfile + ".map");
-			ObjectOutputStream p = new ObjectOutputStream(ostream);
-			p.writeObject(refs);
-			p.flush();
-			ostream.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		// return Standard.validOptions(args, err);
+		return Doclet.validOptions(args, err);
 	}
 
 	/**
-	 * Called by the framework to format the entire document
+	 * Doclet class method that is called by the framework to format the entire
+	 * document
+	 * 
+	 * @Override
 	 * 
 	 * @param root
 	 *            the root of the starting document
@@ -787,6 +705,61 @@ public class TeXDoclet extends Doclet {
 		finish();
 
 		return true;
+	}
+
+	static void init() {
+
+		map2 = new Hashtable<String, Package>();
+		map = new Vector<Package>();
+		try {
+			os = new PrintWriter(new FileWriter(outfile));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		try {
+			if (includeTexOutputInOtherTexFile) {
+				outfilePreamble = outfile
+						.substring(0, outfile.lastIndexOf("."))
+						+ OUT_PREAMBLE_SUFFIX + ".tex";
+				osPreamble = new PrintWriter(new FileWriter(outfilePreamble));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		initSections();
+	}
+
+	static void initSections() {
+		if (sectionLevelMax == null) {
+			if (!includeTexOutputInOtherTexFile) {
+				if (docclass.equals("scrreprt") || docclass.equals("report")) {
+					sectionLevelMax = CHAPTER_LEVEL;
+				} else if (docclass.equals("scrartcl")
+						|| docclass.equals("article")) {
+					sectionLevelMax = SECTION_LEVEL;
+				} else {
+					sectionLevelMax = SECTION_LEVEL;
+				}
+			} else {
+				sectionLevelMax = SECTION_LEVEL;
+			}
+		}
+
+		if (sectionLevelMax.equals(CHAPTER_LEVEL)) {
+			sectionLevels[0] = "chapter";
+			sectionLevels[1] = "section";
+			sectionLevels[2] = "subsection";
+		} else if (sectionLevelMax.equals(SECTION_LEVEL)) {
+			sectionLevels[0] = "section";
+			sectionLevels[1] = "subsection";
+			sectionLevels[2] = "subsubsection";
+		} else if (sectionLevelMax.equals(SUBSECTION_LEVEL)) {
+			sectionLevels[0] = "subsection";
+			sectionLevels[1] = "subsubsection";
+			sectionLevels[2] = "subsubsection";
+		}
 	}
 
 	static void printPreamble(PrintWriter os) {
@@ -2184,5 +2157,84 @@ public class TeXDoclet extends Doclet {
 		}
 
 		return null;
+	}
+
+	static void finish() {
+		if (os != null) {
+			try {
+				os.close();
+			} catch (Exception ex) {
+			}
+		}
+		if (osPreamble != null) {
+			try {
+				osPreamble.close();
+			} catch (Exception ex) {
+			}
+		}
+		try {
+
+			FileOutputStream ostream = new FileOutputStream(outfile + ".map");
+			ObjectOutputStream p = new ObjectOutputStream(ostream);
+			p.writeObject(refs);
+			p.flush();
+			ostream.close();
+
+			if (createPdf) {
+				createPdf();
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	static void createPdf() throws IOException, InterruptedException {
+
+		String cmd = PDFLATEX_CMD + outfile;
+
+		// debuggin only
+		// execute("pwd", null);
+
+		for (int i = 0; i < PDFLATEX_ITERATIONS; i++) {
+			execute(cmd, null, false);
+		}
+
+	}
+
+	static int execute(String cmd, String args[], boolean doOutput)
+			throws IOException, InterruptedException {
+
+		// some logging output :
+		String argsString = "";
+		if (args != null) {
+			argsString = Arrays.toString(args);
+		}
+		System.out.println("command to execute : " + cmd + " " + argsString);
+
+		Process p;
+		if (args == null) {
+			p = Runtime.getRuntime().exec(cmd);
+		} else {
+			p = Runtime.getRuntime().exec(cmd, args);
+		}
+
+		// (?!?) if not reading p.getInputStream() stream, the process execution
+		// seems to be endless and will never return for pdflatex command !
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				p.getInputStream()));
+		String line = reader.readLine();
+		while (line != null) {
+			if (doOutput) {
+				System.out.println("> " + line);
+			}
+			line = reader.readLine();
+		}
+
+		int res = -1;
+		res = p.waitFor();
+
+		System.out.println("return code : " + res);
+		return res;
 	}
 }
