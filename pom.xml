@@ -15,20 +15,21 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 
 		<maven-shade-plugin.version>1.4</maven-shade-plugin.version>
-		<maven-war-plugin.version>2.1.1</maven-war-plugin.version>
+		<maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
 
 		<finalJarName>TeXDoclet</finalJarName>
+		<texdoclet.version>0.9-SNAPSHOT</texdoclet.version>
 
 	</properties>
-	
+
 	<repositories>
-	    <repository>
-	        <id>scala-tools</id>
-	        <url>http://scala-tools.org/repo-releases</url>
-	    </repository>
-	    <repository>
-		  <id>renejeschke-releases</id>
-		  <url>http://maven.renejeschke.de</url>
+		<repository>
+			<id>scala-tools</id>
+			<url>http://scala-tools.org/repo-releases</url>
+		</repository>
+		<repository>
+			<id>renejeschke-releases</id>
+			<url>http://maven.renejeschke.de</url>
 		</repository>
 	</repositories>
 
@@ -38,9 +39,9 @@
 			<artifactId>png-encoder</artifactId>
 			<version>1.5</version>
 		</dependency>
-		
+
 		<!-- some mark down processors -->
-		
+
 		<!--<dependency>
 			<groupId>org.markdownj</groupId>
 			<artifactId>markdownj</artifactId>
@@ -52,23 +53,25 @@
 			<version>1.1.0</version>
 		</dependency>-->
 		<!--<dependency>
-		    <groupId>org.tautua.markdownpapers</groupId>
-		    <artifactId>markdownpapers-core</artifactId>
-		    <version>1.2.7</version>
+		        <groupId>org.tautua.markdownpapers</groupId>
+		        <artifactId>markdownpapers-core</artifactId>
+		        <version>1.2.7</version>
 		</dependency>-->
 		<dependency>
-		  <groupId>com.github.rjeschke</groupId>
-		  <artifactId>txtmark</artifactId>
-		  <version>0.7</version>
+		    <groupId>com.github.rjeschke</groupId>
+		    <artifactId>txtmark</artifactId>
+		    <version>0.7</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
 
 		<finalName>${finalJarName}</finalName>
-		
+		<sourceDirectory>src/main/java</sourceDirectory>
+
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -91,7 +94,121 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- goal javadoc:javadoc - alternative TeXDoclet doclet configuration -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<configuration>
+					<doclet>org.stfm.texdoclet.TeXDoclet</doclet>
+					<docletArtifact>
+						<groupId>org.stfm</groupId>
+						<artifactId>texdoclet</artifactId>
+						<version>${texdoclet.version}</version>
+					</docletArtifact>
+					<sourcepath>src/main/java:src/test/java</sourcepath>
+					<useStandardDocletOptions>false</useStandardDocletOptions><!-- set to false !!! -->
+					<destDir>apidocs_tex</destDir>
+					<additionalparam>
+						-tree
+						-hyperref
+						-output TeXDoclet.tex
+						-createpdf
+						-title "TeXDoclet Java Documentation"
+						-subtitle "Created with Javadoc TeXDoclet Doclet"
+						-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx"
+						-subpackages org
+						-shortinherited
+					</additionalparam>
+				</configuration>
+			</plugin>
+
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-site-plugin</artifactId>
+	            <version>3.0</version>
+	            <executions>
+	                <execution>
+	                    <phase>site</phase>
+	                </execution>
+	            </executions>
+	        </plugin>
+
 		</plugins>
+
 	</build>
+
+    <reporting>
+        <plugins>
+
+        	<!-- Run selective reports - let's build 'about' page only -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.6</version>
+				<reportSets>
+				  <reportSet>
+				    <reports>
+				      <report>index</report>
+				    </reports>
+				  </reportSet>
+				</reportSets>
+			</plugin>
+
+			<!-- goal site:site - alternative TeXDoclet doclet configuration -->
+			<!-- TODO : html docs are not created -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <reportSets>
+
+                    <reportSet>
+                        <id>html</id>
+                        <configuration>
+							<destDir>apidocs_html</destDir>
+						</configuration>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+
+                    <reportSet>
+                        <id>texdoclet</id>
+                        <configuration>
+							<doclet>org.stfm.texdoclet.TeXDoclet</doclet>
+							<docletArtifact>
+								<groupId>org.stfm</groupId>
+								<artifactId>texdoclet</artifactId>
+								<version>${texdoclet.version}</version>
+							</docletArtifact>
+							<sourcepath>src/main/java:src/test/java</sourcepath>
+							<useStandardDocletOptions>false</useStandardDocletOptions>
+							<additionalparam>
+								-tree
+								-hyperref
+								-output TeXDoclet.tex
+								-createpdf
+								-title "TeXDoclet Java Documentation"
+								-subtitle "Created with Javadoc TeXDoclet Doclet"
+								-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx"
+								-subpackages org
+								-shortinherited
+							</additionalparam>
+                            <destDir>apidocs_tex</destDir>
+                            <name>TeXDoclet</name>
+                            <description>TeXDoclet documentation.</description>
+                        </configuration>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+
+                </reportSets>
+            </plugin>
+
+        </plugins>
+    </reporting>
 
 </project>
