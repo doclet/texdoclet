@@ -71,7 +71,7 @@ Then you can use TeXDoclet as an alternate doclet in the `pom.xml` file of any p
 					<docletArtifact>
 						<groupId>org.stfm</groupId>
 						<artifactId>texdoclet</artifactId>
-						<version>${texdoclet.version}</version>
+						<version>0.9-SNAPSHOT</version>
 					</docletArtifact>
 					<sourcepath>src/main/java:src/test/java</sourcepath>
 					<useStandardDocletOptions>false</useStandardDocletOptions><!-- important ! -->
