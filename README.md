@@ -17,6 +17,8 @@ Build
 Run
 ---
 
+### From command line
+
 You have to specify that *javadoc* has to use another doclet than the default doclet by giving the following options to the *javadoc* call :
 
 	javadoc -docletpath <path to>TeXDoclet.jar \
@@ -47,6 +49,55 @@ Print help (TeXDoclet + javadoc help) :
 or (TeXDoclet help only) :
 
 	java -jar target/TeXDoclet.jar -h
+
+
+### Maven integration
+
+Alternatively you can use *TeXDoclet* as an [alternate doclet](http://maven.apache.org/plugins/maven-javadoc-plugin/examples/alternate-doclet.html) if you want to make use of the maven-javadoc-plugin.
+
+First you have to check out the *TeXDoclet* code and make a maven build (by `mvn clean install`). This installs the *TeXDoclet* artifact in your local repository.
+Then you can use TeXDoclet as an alternate doclet in the `pom.xml` file of any project like this :
+
+	<project>
+	...
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<doclet>org.stfm.texdoclet.TeXDoclet</doclet>
+					<docletArtifact>
+						<groupId>org.stfm</groupId>
+						<artifactId>texdoclet</artifactId>
+						<version>${texdoclet.version}</version>
+					</docletArtifact>
+					<sourcepath>src/main/java:src/test/java</sourcepath>
+					<useStandardDocletOptions>false</useStandardDocletOptions><!-- important ! -->
+					<destDir>apidocs_tex</destDir>
+					<additionalparam>
+						-tree
+						-hyperref
+						-output TeXDoclet.tex
+						-createpdf
+						-title "TeXDoclet Java Documentation"
+						-subtitle "Created with Javadoc TeXDoclet Doclet"
+						-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx"
+						-subpackages org
+						-shortinherited
+					</additionalparam>
+				</configuration>
+			</plugin>
+			...
+		</plugins>
+	</build>
+	...
+
+Calling `mvn javadoc:javadoc` creates `TeXDoclet.tex` (and `TeXDoclet.pdf`, see switch `-createpdf`) in the `target/site/apidocs/apidocs_tex` directory.
+
+See `pom.xml` for example usage and more details.
+
 
 Previous versions
 -----------------
