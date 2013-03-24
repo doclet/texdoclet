@@ -6,7 +6,6 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-doclet org.stfm.texdoclet.TeXDoclet \
 	-tree \
 	-hyperref \
-	-texinit texdoclet_include/preamble.tex \
 	-imagespath ".." \
 	-output texdoclet_output/TeXDoclet.tex \
 	-title "TeXDoclet Java Documentation" \

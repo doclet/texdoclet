@@ -104,15 +104,11 @@ public class TableInfo {
 	 * Constructs a new table object and starts processing of the table by
 	 * scanning the <code>&lt;table&gt;</code> passed to count columns.
 	 * 
-	 * @param p
-	 *            properties found on the <code>&lt;table&gt;</code> tag
-	 * @param ret
-	 *            the result buffer that will contain the output
-	 * @param table
-	 *            the input string that has the entire table definition in it.
-	 * @param off
-	 *            the offset into <code>&lt;table&gt;</code> where scanning
-	 *            should start
+	 * //@param p // properties found on the <code>&lt;table&gt;</code> tag
+	 * //@param ret // the result buffer that will contain the output //@param
+	 * table // the input string that has the entire table definition in it.
+	 * //@param off // the offset into <code>&lt;table&gt;</code> where scanning
+	 * // should start
 	 */
 	public StringBuffer startTable(StringBuffer org, MutableAttributeSet attrSet) {
 		originalBuffer = org;
@@ -165,9 +161,6 @@ public class TableInfo {
 	/**
 	 * Ends the table, closing the last row as needed
 	 * 
-	 * @param ret
-	 *            The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
-	 *            into.
 	 */
 	public StringBuffer endTable() {
 		originalBuffer.append("\n% Table #" + tblno + "\n\\begin{center}\n");
@@ -217,11 +210,8 @@ public class TableInfo {
 	/**
 	 * Starts a new column, possibly closing the current column if needed
 	 * 
-	 * @param ret
-	 *            The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
-	 *            into.
-	 * @param p
-	 *            the properties from the <code>&lt;td&gt;</code> tag
+	 * //@param ret The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
+	 * into. //@param p the properties from the <code>&lt;td&gt;</code> tag
 	 */
 	public void startCol(MutableAttributeSet attrSet) {
 		int span = hasNumAttr(HTML.Attribute.COLSPAN, attrSet);
@@ -271,11 +261,8 @@ public class TableInfo {
 	 * Starts a new Heading column, possibly closing the current column if
 	 * needed. A Heading column has a Bold Face font directive around it.
 	 * 
-	 * @param ret
-	 *            The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
-	 *            into.
-	 * @param p
-	 *            The properties from the <code>&lt;th&gt;</code> tag
+	 * //@param ret The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
+	 * into. //@param p The properties from the <code>&lt;th&gt;</code> tag
 	 */
 	public void startHeadCol(MutableAttributeSet attrSet) {
 		startCol(attrSet);
@@ -285,9 +272,8 @@ public class TableInfo {
 	/**
 	 * Ends the current column.
 	 * 
-	 * @param ret
-	 *            The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
-	 *            into.
+	 * //@param ret The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
+	 * into.
 	 */
 	public void endCol() {
 		if (parboxed) {
@@ -300,10 +286,8 @@ public class TableInfo {
 	/**
 	 * Starts a new row, possibly closing the current row if needed
 	 * 
-	 * @param ret
-	 *            The output buffer to put <TEX txt="\LaTeX{}">LaTeX</TEX> into.
-	 * @param p
-	 *            The properties from the <code>&lt;tr&gt;</code> tag
+	 * //@param ret The output buffer to put <TEX txt="\LaTeX{}">LaTeX</TEX>
+	 * into. //@param p The properties from the <code>&lt;tr&gt;</code> tag
 	 */
 	public void startRow(MutableAttributeSet attrSet) {
 		if (rowcnt == 0) {
@@ -318,9 +302,8 @@ public class TableInfo {
 	/**
 	 * Ends the current row.
 	 * 
-	 * @param ret
-	 *            The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
-	 *            into.
+	 * // @param ret The output buffer to put <TEX txt="\LaTeXe{}">LaTeX2e</TEX>
+	 * into.
 	 */
 	public void endRow() {
 		ret.append(" \\\\");

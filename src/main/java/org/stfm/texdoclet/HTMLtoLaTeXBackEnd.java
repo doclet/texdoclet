@@ -69,12 +69,12 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	/**
 	 * Constructs a new instance.
 	 * 
-	 * @param StringBuffer
+	 * @param stringBuffer
 	 *            The <CODE>StringBuffer</CODE> where the translated HTML is
 	 *            appended.
 	 */
-	public HTMLtoLaTeXBackEnd(StringBuffer ret) {
-		this.ret = ret;
+	public HTMLtoLaTeXBackEnd(StringBuffer stringBuffer) {
+		this.ret = stringBuffer;
 	}
 
 	/**
@@ -663,7 +663,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 	 * Converts a HTML string into <TEX txt="\LaTeX{}">LaTeX</TEX> using an
 	 * instance of <CODE>HTMLtoLaTeXBackEnd</CODE>.
 	 * 
-	 * @returns The converted string.
+	 * @return The converted string.
 	 */
 	public static String fixText(String str) {
 		// System.out.println("fixText: " + str);
