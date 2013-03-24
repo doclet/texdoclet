@@ -62,7 +62,7 @@ public class HelpOutput {
 		System.err
 				.println("-hr                       Prints horizontal rows in the output (to get a better? view).");
 		System.err
-				.println("-include                  Creates output in two seperated latex documents: one for the preamble part and another for the actual java documentation content.");
+				.println("-include                  Creates output in two separated latex documents: one for the preamble part and another for the actual java documentation content.");
 		System.err
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
 		System.err
@@ -70,7 +70,7 @@ public class HelpOutput {
 		System.err
 				.println("-tablescale <factor>      Scale factor to specify width of tables. Default value is 0.9.");
 		System.err
-				.println("-createpdf                Calles pdflatex to create a .pdf fiele from the .tex output file.");
+				.println("-createpdf                Creates .pdf file from the .tex output file by using pdflatex tool.");
 	}
 
 }
