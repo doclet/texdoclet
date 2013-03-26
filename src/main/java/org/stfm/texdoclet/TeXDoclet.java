@@ -250,6 +250,28 @@ public class TeXDoclet extends Doclet {
 	static String introFile = null;
 	static double tableWidthScale = 0.9;
 	static boolean createPdf = false;
+	static final String REPLACE_OUT = "_replace_data_";
+	static final String REPLACE_TITLE = "_replace_title_";
+	static final String HTML_PDF_WRAPPER = "<!DOCTYPE html><html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
+			+ "<style>"
+			+ "html {"
+			+ "	height: 100%;"
+			+ "}"
+			+ "body {"
+			+ "	margin: 0px;"
+			+ "	height: 100%;"
+			+ "	overflow: hidden;"
+			+ "}"
+			+ ".pdfDoc {"
+			+ "	height: 100%;"
+			+ " width: 100%;"
+			+ "}"
+			+ "</style>"
+			+ "<title>"
+			+ REPLACE_TITLE
+			+ "</title></head><body><object data=\""
+			+ REPLACE_OUT
+			+ "\" type=\"application/pdf\" class=\"pdfDoc\"></object></body></html>";
 
 	public static void main(String args[]) {
 
@@ -2182,6 +2204,7 @@ public class TeXDoclet extends Doclet {
 
 			if (createPdf) {
 				createPdf();
+				createPdfHtmlWrapper();
 			}
 
 		} catch (Exception ex) {
@@ -2199,6 +2222,20 @@ public class TeXDoclet extends Doclet {
 		for (int i = 0; i < PDFLATEX_ITERATIONS; i++) {
 			execute(cmd, null, false);
 		}
+
+	}
+
+	static void createPdfHtmlWrapper() throws IOException {
+
+		String wrapperContent = HTML_PDF_WRAPPER.replace(REPLACE_OUT,
+				outfile.replace(".tex", ".pdf"));
+		wrapperContent = wrapperContent.replace(REPLACE_TITLE,
+				outfile.replace(".tex", ""));
+
+		FileWriter outFile = new FileWriter("index.html");
+		PrintWriter out = new PrintWriter(outFile);
+		out.println(wrapperContent);
+		out.close();
 
 	}
 
