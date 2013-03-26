@@ -123,7 +123,7 @@
 						<artifactId>texdoclet</artifactId>
 						<version>${texdoclet.version}</version>
 					</docletArtifact>
-					<sourcepath>src/main/java:src/test/java</sourcepath>
+					<!--<sourcepath>src/main/java:src/test/java</sourcepath>-->
 					<useStandardDocletOptions>false</useStandardDocletOptions>
 					<destDir>apidocs_tex</destDir>
 					<additionalparam>
@@ -179,7 +179,7 @@
 								<artifactId>texdoclet</artifactId>
 								<version>${texdoclet.version}</version>
 							</docletArtifact>
-							<sourcepath>src/main/java:src/test/java</sourcepath>
+							<!--<sourcepath>src/main/java:src/test/java</sourcepath>-->
 							<useStandardDocletOptions>false</useStandardDocletOptions>
 							<additionalparam>
 								-tree
