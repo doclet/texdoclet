@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -36,7 +37,6 @@ import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.ThrowsTag;
 import com.sun.javadoc.Type;
-import com.sun.tools.doclets.standard.Standard;
 
 /**
  * This class provides a Java <code>javadoc</code> Doclet which generates a <TEX
@@ -575,6 +575,7 @@ public class TeXDoclet extends Doclet {
 		if (clsFilt != null) {
 			System.out.println("...Filter Classes with: " + clsFilt);
 		}
+		List<String> added = new ArrayList<String>();
 		for (int i = 0; i < cls.length; ++i) {
 			ClassDoc cd = cls[i];
 
@@ -592,7 +593,13 @@ public class TeXDoclet extends Doclet {
 				map2.put(pkg, v);
 				map.add(v);
 			}
-			v.addElement(cd);
+			if (!added.contains(cd.qualifiedName())) {
+				added.add(cd.qualifiedName());
+				v.addElement(cd);
+			} else {
+				System.out.println("skipping duplicate class : "
+						+ cd.qualifiedName());
+			}
 		}
 
 		// Sorting
@@ -950,7 +957,6 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\hbox{" + BOLD + " "
 					+ HTMLtoLaTeXBackEnd.fixText(title) + "}}");
-
 			for (int i = 0; i < v.size(); ++i) {
 				ClassDoc cd = v.elementAt(i);
 				os.print("\\entityintro{"
