@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Hashtable;
@@ -559,58 +560,80 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 					i++;
 				}
 				break;
-			// case 'æ':
-			case '¾':
-				if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
-					ret.append("\\ae\\ ");
-					i++;
+			// case 0xc38a:
+			case 0xc3a6:
+				if (Charset.defaultCharset().name().equals("UTF-8")) {
+					if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
+						ret.append("\\ae\\ ");
+						i++;
+					} else {
+						ret.append("\\ae ");
+					}
 				} else {
-					ret.append("\\ae ");
+					ret.append((char) c);
 				}
 				break;
-			// case 'Æ':
-			case '®':
-				if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
-					ret.append("\\AE\\ ");
-					i++;
+			case 0xc386:
+				if (Charset.defaultCharset().name().equals("UTF-8")) {
+					if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
+						ret.append("\\AE\\ ");
+						i++;
+					} else {
+						ret.append("\\AE ");
+					}
 				} else {
-					ret.append("\\AE ");
+					ret.append((char) c);
 				}
 				break;
-			// case 'å':
-			case 'Œ':
-				if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
-					ret.append("\\aa\\ ");
-					i++;
+			// case 0xc382:
+			case 0xc3a5:
+				if (Charset.defaultCharset().name().equals("UTF-8")) {
+					if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
+						ret.append("\\aa\\ ");
+						i++;
+					} else {
+						ret.append("\\aa ");
+					}
 				} else {
-					ret.append("\\aa ");
+					ret.append((char) c);
 				}
 				break;
-			// case 'Å':
-			case '':
-				if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
-					ret.append("\\AA\\ ");
-					i++;
+			case 0xc385:
+				if (Charset.defaultCharset().name().equals("UTF-8")) {
+					if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
+						ret.append("\\AA\\ ");
+						i++;
+					} else {
+						ret.append("\\AA ");
+					}
 				} else {
-					ret.append("\\AA ");
+					ret.append((char) c);
 				}
 				break;
-			// case 'ø':
-			case '¿':
-				if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
-					ret.append("\\o\\ ");
-					i++;
+			// case 0xc2af:
+			case 0xc3b8:
+				if (Charset.defaultCharset().name().equals("UTF-8")) {
+					if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
+						ret.append("\\o\\ ");
+						i++;
+					} else {
+						ret.append("\\o ");
+					}
 				} else {
-					ret.append("\\o ");
+					ret.append((char) c);
 				}
 				break;
-			// case 'Ø':
-			case '¯':
-				if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
-					ret.append("\\O\\ ");
-					i++;
+			// case 0xc3bf:
+			case 0xc398:
+				if (Charset.defaultCharset().name().equals("UTF-8")) {
+					if (i < str.length() - 1 && str.charAt(i + 1) == ' ') {
+						ret.append("\\O\\ ");
+						i++;
+					} else {
+						ret.append("\\O ");
+					}
 				} else {
-					ret.append("\\O ");
+					ret.append((char) c);
 				}
 				break;
 			case '^':
