@@ -1381,6 +1381,7 @@ public class TeXDoclet extends Doclet {
 							+ refName(makeRefKey(f.qualifiedName())) + "}{");
 				}
 			}
+			os.print(TRUETYPE);
 			if (!cd.isInterface()) {
 				os.print(HTMLtoLaTeXBackEnd.fixText(f.modifiers()) + " ");
 			}
@@ -1392,7 +1393,9 @@ public class TeXDoclet extends Doclet {
 			if (labels && hyperref) {
 				os.println("}");
 			}
-
+			// TRUETYPE ends
+			os.println("}");
+			
 			if (f.inlineTags().length > 0 || f.seeTags().length > 0) {
 				os.println("\\begin{itemize}");
 				if (f.inlineTags().length > 0) {
