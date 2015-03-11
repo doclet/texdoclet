@@ -1385,8 +1385,8 @@ public class TeXDoclet extends Doclet {
 				os.print(HTMLtoLaTeXBackEnd.fixText(f.modifiers()) + " ");
 			}
 			os.print(HTMLtoLaTeXBackEnd.fixText(packageRelativIdentifier(
-					f.containingPackage(), f.type().qualifiedTypeName()))
-					+ " ");
+					f.containingPackage(), f.type().toString()))
+					+ "\\ ");
 			os.print("" + BOLD + " " + HTMLtoLaTeXBackEnd.fixText(f.name())
 					+ "}");
 			if (labels && hyperref) {
