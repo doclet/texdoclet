@@ -1618,7 +1618,7 @@ public class TeXDoclet extends Doclet {
 		os.println();
 
 		// Print signature
-		os.print("" + TRUETYPE + "");
+		os.print(TRUETYPE);
 		if (!mem.containingClass().isInterface()) {
 			os.print(HTMLtoLaTeXBackEnd.fixText(mem.modifiers()));
 		}
