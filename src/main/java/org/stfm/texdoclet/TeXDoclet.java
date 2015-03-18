@@ -2006,7 +2006,7 @@ public class TeXDoclet extends Doclet {
 				} else {
 					// Encapsulate the link in a "TEX" tag and let
 					// HTMLtoLaTeXBackEnd.fixText handle the rest.
-					htmlstr += "<TEX txt=\"";
+					htmlstr += "<TEX txt=\"\\texttt{\\small ";
 					if (hyperref) {
 						htmlstr += "\\hyperlink{"
 								+ refName(makeRefKey(linkstr)) + "}{";
@@ -2015,7 +2015,7 @@ public class TeXDoclet extends Doclet {
 					if (hyperref) {
 						htmlstr += "}";
 					}
-					htmlstr += "{\\small \n";
+					htmlstr += "}{\\small \n";
 					htmlstr += "\\refdefined{" + refName(makeRefKey(linkstr))
 							+ "}";
 					htmlstr += "}";
