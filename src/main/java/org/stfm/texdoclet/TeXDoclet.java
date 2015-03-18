@@ -820,6 +820,8 @@ public class TeXDoclet extends Doclet {
 
 		printPreambleUsePackages(os);
 
+		printPreambleListingsOptions(os);
+
 		printPreambleIfPfd(os);
 
 		printPreambleNewCommands(os);
@@ -848,6 +850,11 @@ public class TeXDoclet extends Doclet {
 		}
 		os.println("\\usepackage{ifpdf}");
 		os.println("\\usepackage[" + style + "]{fullpage}");
+		os.println("\\usepackage{listings}");
+	}
+
+	static void printPreambleListingsOptions(PrintWriter os) {
+		os.println("\\lstset{language=Java,breaklines=true}");
 	}
 
 	static void printPreambleTitle(PrintWriter os) {
@@ -1122,25 +1129,24 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\" + sectionLevels[2] + "{Declaration}{");
 
-			os.print("\\small " + HTMLtoLaTeXBackEnd.fixText(cd.modifiers())
-					+ " ");
+			os.println("\\begin{lstlisting}[frame=trBL]");
+			os.print(cd.modifiers() + " ");
 			if (cd.isInterface() == false) {
 				os.print("class ");
 			}
-			os.println(HTMLtoLaTeXBackEnd.fixText(cd.name()));
+			os.println(cd.name());
 			ClassDoc sc = cd.superclass();
 			if (sc != null) {
-				os.println("\\\\ " + BOLD + " extends} "
-						+ HTMLtoLaTeXBackEnd.fixText(sc.qualifiedName()));
-				printRef(sc.containingPackage(), sc.name(), null);
+				os.print(" extends "
+						+ sc.qualifiedName());
 			}
 
 			ClassDoc intf[] = cd.interfaces();
 			if (intf.length > 0) {
 				if (cd.isInterface() == false) {
-					os.println("\\\\ " + BOLD + " implements} ");
+					os.print(" implements ");
 				} else {
-					os.println("\\\\ " + BOLD + " extends} ");
+					os.print(" extends ");
 				}
 				for (int j = 0; j < intf.length; ++j) {
 					ClassDoc in = intf[j];
@@ -1154,10 +1160,10 @@ public class TeXDoclet extends Doclet {
 					if (j > 0) {
 						os.print(", ");
 					}
-					os.print(HTMLtoLaTeXBackEnd.fixText(nm));
+					os.print(nm);
 				}
 			}
-			os.println("}");
+			os.println("\\end{lstlisting}");
 			ExecutableMemberDoc[] mems;
 			FieldDoc[] flds;
 
@@ -1628,33 +1634,28 @@ public class TeXDoclet extends Doclet {
 		os.println();
 
 		// Print signature
-		os.print(TRUETYPE);
+		os.println("\\begin{lstlisting}[frame=single]");
 		if (!mem.containingClass().isInterface()) {
-			os.print(HTMLtoLaTeXBackEnd.fixText(mem.modifiers()));
+			os.print(mem.modifiers() + " ");
 		}
 		if (mem instanceof MethodDoc) {
-			os.print(" "
-					+ HTMLtoLaTeXBackEnd.fixText(packageRelativIdentifier(pac,
-							((MethodDoc) mem).returnType().toString())));
+			os.print(packageRelativIdentifier(pac, ((MethodDoc) mem)
+					.returnType().toString()) + " ");
 		}
-		os.print("\\ " + BOLD + " " + HTMLtoLaTeXBackEnd.fixText(mem.name())
-				+ "}(");
+		os.print(mem.name() + "(");
 		Parameter[] parms = mem.parameters();
 		int p = 0;
 		String qparmstr = "";
 		String parmstr = "";
 		for (; p < parms.length; ++p) {
 			if (p > 0) {
-				os.println(",");
+				os.print(",");
 			}
 			Type t = parms[p].type();
-			os.print(TRUETYPE
-					+ HTMLtoLaTeXBackEnd.fixText(packageRelativIdentifier(pac,
-							t.qualifiedTypeName())));
-			os.print(HTMLtoLaTeXBackEnd.fixText(t.dimension()) + "}");
+			os.print(packageRelativIdentifier(pac, t.qualifiedTypeName()));
+			os.print(t.dimension());
 			if (parms[p].name().equals("") == false) {
-				os.print(" " + BOLD + " "
-						+ HTMLtoLaTeXBackEnd.fixText(parms[p].name()) + "}");
+				os.print(" " + parms[p].name());
 			}
 			if (qparmstr.length() != 0) {
 				qparmstr += ",";
@@ -1675,19 +1676,7 @@ public class TeXDoclet extends Doclet {
 				os.print(", " + thrownExceptions[e].qualifiedName());
 			}
 		}
-		os.println();
-
-		if (copiedTo == null) {
-			os.print("\\label{"
-					+ refName(makeRefKey(mem.qualifiedName() + mem.signature()))
-					+ "}");
-		} else {
-			os.print("\\label{"
-					+ refName(makeRefKey(copiedTo.qualifiedName()
-							+ copiedTo.signature())) + "}");
-		}
-
-		os.println("}%end signature");
+		os.println("\\end{lstlisting} %end signature");
 		boolean yet = false;
 
 		// Description
