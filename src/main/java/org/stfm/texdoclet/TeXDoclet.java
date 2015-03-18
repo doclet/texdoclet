@@ -2021,6 +2021,8 @@ public class TeXDoclet extends Doclet {
 					htmlstr += "}";
 					htmlstr += "\"></TEX>";
 				}
+			} else if ("@code".equals(tags[i].name())) {
+				htmlstr += "<code>" + tags[i].text() + "</code>";
 			} else {
 				htmlstr += tags[i].text();
 			}
