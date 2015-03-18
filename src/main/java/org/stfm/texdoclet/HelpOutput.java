@@ -62,6 +62,8 @@ public class HelpOutput {
 		System.err
 				.println("-hr                       Prints horizontal rows in the output (to get a better? view).");
 		System.err
+				.println("-nopackagetoc             Do not include a table of content for each package");
+		System.err
 				.println("-include                  Creates output in two separated latex documents: one for the preamble part and another for the actual java documentation content.");
 		System.err
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");

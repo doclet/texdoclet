@@ -239,6 +239,7 @@ public class TeXDoclet extends Doclet {
 	static boolean useFieldSummary = true;
 	static boolean useConstructorSummary = true;
 	static boolean useHr = false;
+	static boolean usePackageToc = true;
 	static boolean shortInheritance = false;
 	/**
 	 * print writer for extra LaTeX preamble file
@@ -366,6 +367,8 @@ public class TeXDoclet extends Doclet {
 			return 2;
 		} else if (option.equals("-hr")) {
 			return 1;
+		} else if (option.equals("-nopackagetoc")) {
+			return 1;
 		} else if (option.equals("-shortinherited")) {
 			return 1;
 		} else if (option.equals("-help")) {
@@ -472,6 +475,8 @@ public class TeXDoclet extends Doclet {
 				sectionLevelMax = args[i][1];
 			} else if (args[i][0].equals("-hr")) {
 				useHr = true;
+			} else if (args[i][0].equals("-nopackagetoc")) {
+				usePackageToc = false;
 			} else if (args[i][0].equals("-shortinherited")) {
 				shortInheritance = true;
 			} else if (args[i][0].equals("-help")) {
@@ -645,21 +650,23 @@ public class TeXDoclet extends Doclet {
 			// "\\markboth{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}"
 			// );
 
-			if (ITALIC.indexOf("textit") != -1) {
-				os.println("\\hskip -.05in");
+			if (usePackageToc) {
+				if (ITALIC.indexOf("textit") != -1) {
+					os.println("\\hskip -.05in");
+				}
+				os.println("\\hbox to \\hsize{" + ITALIC
+						+ " Package Contents\\hfil Page}}");
+				if (useHr) {
+					os.println("\\rule{\\hsize}{.7mm}");
+				}
+				tocForClasses("Interfaces", pkg.interfaces);
+				tocForClasses("Classes", pkg.classes);
+				os.println("\\vskip .1in");
+				if (useHr) {
+					os.println("\\rule{\\hsize}{.7mm}");
+				}
+				os.println("\\vskip .1in");
 			}
-			os.println("\\hbox to \\hsize{" + ITALIC
-					+ " Package Contents\\hfil Page}}");
-			if (useHr) {
-				os.println("\\rule{\\hsize}{.7mm}");
-			}
-			tocForClasses("Interfaces", pkg.interfaces);
-			tocForClasses("Classes", pkg.classes);
-			os.println("\\vskip .1in");
-			if (useHr) {
-				os.println("\\rule{\\hsize}{.7mm}");
-			}
-			os.println("\\vskip .1in");
 
 			// The path relative to which <IMG> will be resolved.
 			packageDir = findPackageDir(pkg.pkg, root);
