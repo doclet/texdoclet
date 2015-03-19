@@ -73,6 +73,10 @@ public class HelpOutput {
 				.println("-tablescale <factor>      Scale factor to specify width of tables. Default value is 0.9.");
 		System.err
 				.println("-createpdf                Creates .pdf file from the .tex output file by using pdflatex tool.");
+		System.err
+				.println("-packageorder <pkg1>,<pkg2>,...");
+		System.err
+				.println("                          Use a specific package order.");
 	}
 
 }

@@ -251,6 +251,7 @@ public class TeXDoclet extends Doclet {
 	static String introFile = null;
 	static double tableWidthScale = 0.9;
 	static boolean createPdf = false;
+	static String package_order = null;
 	static final String REPLACE_OUT = "_replace_data_";
 	static final String REPLACE_TITLE = "_replace_title_";
 	static final String HTML_PDF_WRAPPER = "<!DOCTYPE html><html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
@@ -386,6 +387,8 @@ public class TeXDoclet extends Doclet {
 			return 2;
 		} else if (option.equals("-createpdf")) {
 			return 1;
+		} else if (option.equals("-packageorder")) {
+			return 2;
 		}
 		System.out.println("unknown TeXDoclet option " + option);
 
@@ -492,6 +495,8 @@ public class TeXDoclet extends Doclet {
 				tableWidthScale = Double.parseDouble(args[i][1]);
 			} else if (args[i][0].equals("-createpdf")) {
 				createPdf = true;
+			} else if (args[i][0].equals("-packageorder")) {
+				package_order = args[i][1];
 			}
 
 			if (sectionLevelMax != null
@@ -568,6 +573,32 @@ public class TeXDoclet extends Doclet {
 		ClassDoc[] cls = root.classes();
 
 		PackageDoc[] specifiedPackages = root.specifiedPackages();
+
+		// Sort the packages
+		if (package_order != null) {
+			String[] pkg = package_order.split(",");
+			for (int i = 0; i < pkg.length; i++) {
+				// Search for pkg[i] in the specifiedPackages
+				int j; boolean found = false;
+				for (j = i; j < specifiedPackages.length; j++) {
+					if (specifiedPackages[j].name().equals(pkg[i])) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					System.err.println("Package " + pkg + " not found, aborting.");
+					return false;
+				}
+				if (i != j) {
+					// specifiedPackages has to be reordered
+					PackageDoc swap = specifiedPackages[i];
+					specifiedPackages[i] = specifiedPackages[j];
+					specifiedPackages[j] = swap;
+				}
+			}
+		}
+
 		System.out.println("specifiedPackages : " + specifiedPackages.length);
 		for (int i = 0; i < specifiedPackages.length; i++) {
 			Package P = new Package(specifiedPackages[i].name(),
