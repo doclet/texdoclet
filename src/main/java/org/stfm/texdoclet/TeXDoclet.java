@@ -560,7 +560,7 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\thispagestyle{empty}");
 			os.println("\\markboth{Introduction}{Introduction}");
-			printTags(root.inlineTags());
+			printTags(null, root.inlineTags());
 			os.println("}");
 
 		}
@@ -673,7 +673,7 @@ public class TeXDoclet extends Doclet {
 
 			// Package comments
 			if (pkg.pkgDoc.inlineTags().length > 0) {
-				printTags(pkg.pkgDoc.inlineTags());
+				printTags(pkg.pkgDoc, pkg.pkgDoc.inlineTags());
 
 				if (useHr) {
 					os.println("\\mbox{}\\\\ \\rule{\\hsize}{.7mm}");
@@ -976,7 +976,7 @@ public class TeXDoclet extends Doclet {
 				os.print("\\entityintro{"
 						+ HTMLtoLaTeXBackEnd.fixText(cd.name()) + "}" + "{"
 						+ refName(makeRefKey(cd.qualifiedName())) + "}" + "{");
-				printTags(cd.firstSentenceTags());
+				printTags(cd.containingPackage(), cd.firstSentenceTags());
 				os.println("}");
 			}
 		}
@@ -1111,7 +1111,7 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\vskip .1in ");
 			if (cd.inlineTags().length > 0) {
-				printTags(cd.inlineTags());
+				printTags(cd.containingPackage(), cd.inlineTags());
 				os.println("\\vskip .1in ");
 			}
 
@@ -1413,7 +1413,7 @@ public class TeXDoclet extends Doclet {
 				os.println("\\begin{itemize}");
 				if (f.inlineTags().length > 0) {
 					os.println("\\item{\\vskip -.9ex ");
-					printTags(f.inlineTags());
+					printTags(f.containingPackage(), f.inlineTags());
 					os.println("}");
 				}
 
@@ -1472,7 +1472,7 @@ public class TeXDoclet extends Doclet {
 				os.print("}");
 			}
 			os.print(" ");
-			printTags(mem.firstSentenceTags());
+			printTags(mem.containingPackage(), mem.firstSentenceTags());
 			os.println("\\\\");
 		}
 		os.println("\\end{verse}");
@@ -1507,7 +1507,7 @@ public class TeXDoclet extends Doclet {
 				os.print("}");
 			}
 			os.print(" ");
-			printTags(mem.firstSentenceTags());
+			printTags(mem.containingPackage(), mem.firstSentenceTags());
 			os.println("\\\\");
 		}
 		os.println("\\end{verse}");
@@ -1703,7 +1703,7 @@ public class TeXDoclet extends Doclet {
 				os.print("\\refdefined{" + refName(makeRefKey(classname)) + "}");
 				os.println("} }\n");
 			}
-			printTags(mem.inlineTags());
+			printTags(mem.containingPackage(), mem.inlineTags());
 			os.println("\n}");
 		}
 
@@ -1721,7 +1721,7 @@ public class TeXDoclet extends Doclet {
 				os.print(TRUETYPE
 						+ HTMLtoLaTeXBackEnd.fixText(params[j].parameterName())
 						+ "}" + " -- ");
-				printTags(params[j].inlineTags());
+				printTags(mem.containingPackage(), params[j].inlineTags());
 				os.println("}");
 			}
 			os.println("  \\end{itemize}");
@@ -1738,7 +1738,7 @@ public class TeXDoclet extends Doclet {
 				}
 				os.println("\\item{" + BOLD + " Returns} -- ");
 				for (int j = 0; j < ret.length; ++j) {
-					printTags(ret[j].inlineTags());
+					printTags(mem.containingPackage(), ret[j].inlineTags());
 					os.println(" ");
 				}
 				os.println("}%end item");
@@ -1763,7 +1763,7 @@ public class TeXDoclet extends Doclet {
 					}
 					os.print("   \\item{\\vskip -.6ex " + TRUETYPE
 							+ HTMLtoLaTeXBackEnd.fixText(ename) + "} -- ");
-					printTags(excp[j].inlineTags());
+					printTags(mem.containingPackage(), excp[j].inlineTags());
 					os.println("}");
 				}
 				os.println("  \\end{itemize}");
@@ -1975,7 +1975,7 @@ public class TeXDoclet extends Doclet {
 	/**
 	 * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
 	 */
-	static void printTags(Tag[] tags) {
+	static void printTags(PackageDoc this_package, Tag[] tags) {
 		String htmlstr = new String();
 
 		for (int i = 0; i < tags.length; i++) {
@@ -1983,21 +1983,28 @@ public class TeXDoclet extends Doclet {
 				SeeTag link = (SeeTag) tags[i];
 
 				String linkstr = "";
+				String label;
 				if (link.referencedMember() != null) {
+					MemberDoc member = link.referencedMember(); 
+					linkstr = member.qualifiedName();
+					label = classRelativeIdentifier(member.containingClass(), member.name());
 					if (link.referencedMember() instanceof ExecutableMemberDoc) {
-						ExecutableMemberDoc m = (ExecutableMemberDoc) link
-								.referencedMember();
-						linkstr = m.qualifiedName() + m.signature();
-					} else {
-						linkstr = link.referencedMember().qualifiedName();
+						// If the member is a method, append the method signature
+						ExecutableMemberDoc m = (ExecutableMemberDoc) member;
+						linkstr += m.signature();
+						label += m.flatSignature();
 					}
 				} else if (link.referencedClass() != null) {
 					linkstr = link.referencedClass().qualifiedName();
+					label = packageRelativIdentifier(this_package, link.referencedClass().name());
 				} else if (link.referencedPackage() != null) {
 					linkstr = link.referencedPackage().name();
+					label = linkstr;
+				} else {
+					label = "";
 				}
 
-				if (linkstr.equals("")) {
+				if (linkstr.isEmpty()) {
 					htmlstr += link.text();
 				} else {
 					// Encapsulate the link in a "TEX" tag and let
@@ -2007,7 +2014,10 @@ public class TeXDoclet extends Doclet {
 						htmlstr += "\\hyperlink{"
 								+ refName(makeRefKey(linkstr)) + "}{";
 					}
-					htmlstr += HTMLtoLaTeXBackEnd.fixText(link.label());
+					if (!link.label().isEmpty()) {
+						label = link.label();
+					}
+					htmlstr += HTMLtoLaTeXBackEnd.fixText(label);
 					if (hyperref) {
 						htmlstr += "}";
 					}
@@ -2059,9 +2069,30 @@ public class TeXDoclet extends Doclet {
 	 *            The identifier to be made relative.
 	 */
 	static String packageRelativIdentifier(PackageDoc doc, String str) {
-		if (str.startsWith(doc.name() + ".")) {
+		if (doc != null && str.startsWith(doc.name() + ".")) {
 			return str.substring(doc.name().length() + 1);
 		} else {
+			return str;
+		}
+	}
+
+	/**
+	 * Returns a class relative identifier.
+	 * 
+	 * @param doc
+	 *            The class the identifier should be relative to.
+	 * @param str
+	 *            The identifier to be made relative.
+	 */
+	static String classRelativeIdentifier(ClassDoc doc, String str) {
+		if (str.startsWith(doc.name())) {
+			// This is a member or a method of the same class
+			return str.substring(doc.name().length() + 1);
+		} else if (str.startsWith(doc.containingPackage().name())) {
+			// This is a member or a method of a different class but from the same package
+			return str.substring(doc.name().length() + 1);
+		} else {
+			// This is a member or a method from a different package, cannot be simplified
 			return str;
 		}
 	}
