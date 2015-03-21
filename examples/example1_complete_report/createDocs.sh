@@ -13,7 +13,9 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 	-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx" \
 	-sourcepath ../../src/main/java:../../src/test/java \
 	-subpackages org \
- 	-shortinherited
+ 	-shortinherited \
+ 	-classdeclrframe trBL \
+ 	-methoddeclrframe single
 
 cd texdoclet_output
 pdflatex TeXDoclet.tex

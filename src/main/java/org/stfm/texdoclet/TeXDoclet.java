@@ -193,6 +193,9 @@ public class TeXDoclet extends Doclet {
 	public static final String CHAPTER_LEVEL = "chapter";
 	public static final String SUBSECTION_LEVEL = "subsection";
 
+	public static final String DEFAULT_CLASS_FRAME = "none";
+	public static final String DEFAULT_METHOD_FRAME = "none";
+
 	public static final String BOLD = "{\\bf ";
 	// no bold AND truetype support if using textbf !
 	// public static final String BOLD = "\\textbf{";
@@ -252,6 +255,8 @@ public class TeXDoclet extends Doclet {
 	static double tableWidthScale = 0.9;
 	static boolean createPdf = false;
 	static String package_order = null;
+	static String classDeclarationFrame = DEFAULT_CLASS_FRAME;
+	static String methodDeclarationFrame = DEFAULT_CLASS_FRAME;
 	static final String REPLACE_OUT = "_replace_data_";
 	static final String REPLACE_TITLE = "_replace_title_";
 	static final String HTML_PDF_WRAPPER = "<!DOCTYPE html><html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
@@ -389,6 +394,10 @@ public class TeXDoclet extends Doclet {
 			return 1;
 		} else if (option.equals("-packageorder")) {
 			return 2;
+		} else if (option.equals("-classdeclrframe")) {
+			return 2;
+		} else if (option.equals("-methoddeclrframe")) {
+			return 2;
 		}
 		System.out.println("unknown TeXDoclet option " + option);
 
@@ -497,6 +506,10 @@ public class TeXDoclet extends Doclet {
 				createPdf = true;
 			} else if (args[i][0].equals("-packageorder")) {
 				package_order = args[i][1];
+			} else if (args[i][0].equals("-classdeclrframe")) {
+				classDeclarationFrame = args[i][1];
+			} else if (args[i][0].equals("-methoddeclrframe")) {
+				methodDeclarationFrame = args[i][1];
 			}
 
 			if (sectionLevelMax != null
@@ -579,7 +592,8 @@ public class TeXDoclet extends Doclet {
 			String[] pkg = package_order.split(",");
 			for (int i = 0; i < pkg.length; i++) {
 				// Search for pkg[i] in the specifiedPackages
-				int j; boolean found = false;
+				int j;
+				boolean found = false;
 				for (j = i; j < specifiedPackages.length; j++) {
 					if (specifiedPackages[j].name().equals(pkg[i])) {
 						found = true;
@@ -587,7 +601,8 @@ public class TeXDoclet extends Doclet {
 					}
 				}
 				if (!found) {
-					System.err.println("Package " + pkg + " not found, aborting.");
+					System.err.println("Package " + pkg
+							+ " not found, aborting.");
 					return false;
 				}
 				if (i != j) {
@@ -1160,7 +1175,8 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\" + sectionLevels[2] + "{Declaration}{");
 
-			os.println("\\begin{lstlisting}[frame=trBL]");
+			os.println("\\begin{lstlisting}[frame=" + classDeclarationFrame
+					+ "]");
 			os.print(cd.modifiers() + " ");
 			if (cd.isInterface() == false) {
 				os.print("class ");
@@ -1168,8 +1184,7 @@ public class TeXDoclet extends Doclet {
 			os.println(cd.name());
 			ClassDoc sc = cd.superclass();
 			if (sc != null) {
-				os.print(" extends "
-						+ sc.qualifiedName());
+				os.print(" extends " + sc.qualifiedName());
 			}
 
 			ClassDoc intf[] = cd.interfaces();
@@ -1439,7 +1454,7 @@ public class TeXDoclet extends Doclet {
 			}
 			// TRUETYPE ends
 			os.println("}");
-			
+
 			if (f.inlineTags().length > 0 || f.seeTags().length > 0) {
 				os.println("\\begin{itemize}");
 				if (f.inlineTags().length > 0) {
@@ -1665,13 +1680,14 @@ public class TeXDoclet extends Doclet {
 		os.println();
 
 		// Print signature
-		os.println("\\begin{lstlisting}[frame=single]");
+		os.println("\\begin{lstlisting}[frame=" + methodDeclarationFrame + "]");
 		if (!mem.containingClass().isInterface()) {
 			os.print(mem.modifiers() + " ");
 		}
 		if (mem instanceof MethodDoc) {
 			os.print(packageRelativIdentifier(pac, ((MethodDoc) mem)
-					.returnType().toString()) + " ");
+					.returnType().toString())
+					+ " ");
 		}
 		os.print(mem.name() + "(");
 		Parameter[] parms = mem.parameters();
@@ -2016,18 +2032,21 @@ public class TeXDoclet extends Doclet {
 				String linkstr = "";
 				String label;
 				if (link.referencedMember() != null) {
-					MemberDoc member = link.referencedMember(); 
+					MemberDoc member = link.referencedMember();
 					linkstr = member.qualifiedName();
-					label = classRelativeIdentifier(member.containingClass(), member.name());
+					label = classRelativeIdentifier(member.containingClass(),
+							member.name());
 					if (link.referencedMember() instanceof ExecutableMemberDoc) {
-						// If the member is a method, append the method signature
+						// If the member is a method, append the method
+						// signature
 						ExecutableMemberDoc m = (ExecutableMemberDoc) member;
 						linkstr += m.signature();
 						label += m.flatSignature();
 					}
 				} else if (link.referencedClass() != null) {
 					linkstr = link.referencedClass().qualifiedName();
-					label = packageRelativIdentifier(this_package, link.referencedClass().name());
+					label = packageRelativIdentifier(this_package, link
+							.referencedClass().name());
 				} else if (link.referencedPackage() != null) {
 					linkstr = link.referencedPackage().name();
 					label = linkstr;
@@ -2120,10 +2139,12 @@ public class TeXDoclet extends Doclet {
 			// This is a member or a method of the same class
 			return str.substring(doc.name().length() + 1);
 		} else if (str.startsWith(doc.containingPackage().name())) {
-			// This is a member or a method of a different class but from the same package
+			// This is a member or a method of a different class but from the
+			// same package
 			return str.substring(doc.name().length() + 1);
 		} else {
-			// This is a member or a method from a different package, cannot be simplified
+			// This is a member or a method from a different package, cannot be
+			// simplified
 			return str;
 		}
 	}
