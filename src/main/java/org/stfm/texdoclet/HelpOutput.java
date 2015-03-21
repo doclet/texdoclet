@@ -62,6 +62,8 @@ public class HelpOutput {
 		System.err
 				.println("-hr                       Prints horizontal rows in the output (to get a better? view).");
 		System.err
+				.println("-nopackagetoc             Do not include a table of content for each package");
+		System.err
 				.println("-include                  Creates output in two separated latex documents: one for the preamble part and another for the actual java documentation content.");
 		System.err
 				.println("-sectionlevel <level>     Specifies the highest level of sections (either \"subsection\", \"section\" or \"chapter\").");
@@ -71,6 +73,10 @@ public class HelpOutput {
 				.println("-tablescale <factor>      Scale factor to specify width of tables. Default value is 0.9.");
 		System.err
 				.println("-createpdf                Creates .pdf file from the .tex output file by using pdflatex tool.");
+		System.err
+				.println("-packageorder <pkg1>,<pkg2>,...");
+		System.err
+				.println("                          Use a specific package order.");
 	}
 
 }

@@ -239,6 +239,7 @@ public class TeXDoclet extends Doclet {
 	static boolean useFieldSummary = true;
 	static boolean useConstructorSummary = true;
 	static boolean useHr = false;
+	static boolean usePackageToc = true;
 	static boolean shortInheritance = false;
 	/**
 	 * print writer for extra LaTeX preamble file
@@ -250,6 +251,7 @@ public class TeXDoclet extends Doclet {
 	static String introFile = null;
 	static double tableWidthScale = 0.9;
 	static boolean createPdf = false;
+	static String package_order = null;
 	static final String REPLACE_OUT = "_replace_data_";
 	static final String REPLACE_TITLE = "_replace_title_";
 	static final String HTML_PDF_WRAPPER = "<!DOCTYPE html><html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
@@ -366,6 +368,8 @@ public class TeXDoclet extends Doclet {
 			return 2;
 		} else if (option.equals("-hr")) {
 			return 1;
+		} else if (option.equals("-nopackagetoc")) {
+			return 1;
 		} else if (option.equals("-shortinherited")) {
 			return 1;
 		} else if (option.equals("-help")) {
@@ -383,6 +387,8 @@ public class TeXDoclet extends Doclet {
 			return 2;
 		} else if (option.equals("-createpdf")) {
 			return 1;
+		} else if (option.equals("-packageorder")) {
+			return 2;
 		}
 		System.out.println("unknown TeXDoclet option " + option);
 
@@ -472,6 +478,8 @@ public class TeXDoclet extends Doclet {
 				sectionLevelMax = args[i][1];
 			} else if (args[i][0].equals("-hr")) {
 				useHr = true;
+			} else if (args[i][0].equals("-nopackagetoc")) {
+				usePackageToc = false;
 			} else if (args[i][0].equals("-shortinherited")) {
 				shortInheritance = true;
 			} else if (args[i][0].equals("-help")) {
@@ -487,6 +495,8 @@ public class TeXDoclet extends Doclet {
 				tableWidthScale = Double.parseDouble(args[i][1]);
 			} else if (args[i][0].equals("-createpdf")) {
 				createPdf = true;
+			} else if (args[i][0].equals("-packageorder")) {
+				package_order = args[i][1];
 			}
 
 			if (sectionLevelMax != null
@@ -555,7 +565,7 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\thispagestyle{empty}");
 			os.println("\\markboth{Introduction}{Introduction}");
-			printTags(root.inlineTags());
+			printTags(null, root.inlineTags());
 			os.println("}");
 
 		}
@@ -563,6 +573,32 @@ public class TeXDoclet extends Doclet {
 		ClassDoc[] cls = root.classes();
 
 		PackageDoc[] specifiedPackages = root.specifiedPackages();
+
+		// Sort the packages
+		if (package_order != null) {
+			String[] pkg = package_order.split(",");
+			for (int i = 0; i < pkg.length; i++) {
+				// Search for pkg[i] in the specifiedPackages
+				int j; boolean found = false;
+				for (j = i; j < specifiedPackages.length; j++) {
+					if (specifiedPackages[j].name().equals(pkg[i])) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					System.err.println("Package " + pkg + " not found, aborting.");
+					return false;
+				}
+				if (i != j) {
+					// specifiedPackages has to be reordered
+					PackageDoc swap = specifiedPackages[i];
+					specifiedPackages[i] = specifiedPackages[j];
+					specifiedPackages[j] = swap;
+				}
+			}
+		}
+
 		System.out.println("specifiedPackages : " + specifiedPackages.length);
 		for (int i = 0; i < specifiedPackages.length; i++) {
 			Package P = new Package(specifiedPackages[i].name(),
@@ -645,28 +681,30 @@ public class TeXDoclet extends Doclet {
 			// "\\markboth{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}{\\protect\\packagename \\hspace{.02in} -- \\protect\\classname}"
 			// );
 
-			if (ITALIC.indexOf("textit") != -1) {
-				os.println("\\hskip -.05in");
+			if (usePackageToc) {
+				if (ITALIC.indexOf("textit") != -1) {
+					os.println("\\hskip -.05in");
+				}
+				os.println("\\hbox to \\hsize{" + ITALIC
+						+ " Package Contents\\hfil Page}}");
+				if (useHr) {
+					os.println("\\rule{\\hsize}{.7mm}");
+				}
+				tocForClasses("Interfaces", pkg.interfaces);
+				tocForClasses("Classes", pkg.classes);
+				os.println("\\vskip .1in");
+				if (useHr) {
+					os.println("\\rule{\\hsize}{.7mm}");
+				}
+				os.println("\\vskip .1in");
 			}
-			os.println("\\hbox to \\hsize{" + ITALIC
-					+ " Package Contents\\hfil Page}}");
-			if (useHr) {
-				os.println("\\rule{\\hsize}{.7mm}");
-			}
-			tocForClasses("Interfaces", pkg.interfaces);
-			tocForClasses("Classes", pkg.classes);
-			os.println("\\vskip .1in");
-			if (useHr) {
-				os.println("\\rule{\\hsize}{.7mm}");
-			}
-			os.println("\\vskip .1in");
 
 			// The path relative to which <IMG> will be resolved.
 			packageDir = findPackageDir(pkg.pkg, root);
 
 			// Package comments
 			if (pkg.pkgDoc.inlineTags().length > 0) {
-				printTags(pkg.pkgDoc.inlineTags());
+				printTags(pkg.pkgDoc, pkg.pkgDoc.inlineTags());
 
 				if (useHr) {
 					os.println("\\mbox{}\\\\ \\rule{\\hsize}{.7mm}");
@@ -813,6 +851,8 @@ public class TeXDoclet extends Doclet {
 
 		printPreambleUsePackages(os);
 
+		printPreambleListingsOptions(os);
+
 		printPreambleIfPfd(os);
 
 		printPreambleNewCommands(os);
@@ -841,6 +881,11 @@ public class TeXDoclet extends Doclet {
 		}
 		os.println("\\usepackage{ifpdf}");
 		os.println("\\usepackage[" + style + "]{fullpage}");
+		os.println("\\usepackage{listings}");
+	}
+
+	static void printPreambleListingsOptions(PrintWriter os) {
+		os.println("\\lstset{language=Java,breaklines=true}");
 	}
 
 	static void printPreambleTitle(PrintWriter os) {
@@ -962,7 +1007,7 @@ public class TeXDoclet extends Doclet {
 				os.print("\\entityintro{"
 						+ HTMLtoLaTeXBackEnd.fixText(cd.name()) + "}" + "{"
 						+ refName(makeRefKey(cd.qualifiedName())) + "}" + "{");
-				printTags(cd.firstSentenceTags());
+				printTags(cd.containingPackage(), cd.firstSentenceTags());
 				os.println("}");
 			}
 		}
@@ -1097,7 +1142,7 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\vskip .1in ");
 			if (cd.inlineTags().length > 0) {
-				printTags(cd.inlineTags());
+				printTags(cd.containingPackage(), cd.inlineTags());
 				os.println("\\vskip .1in ");
 			}
 
@@ -1115,25 +1160,24 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\" + sectionLevels[2] + "{Declaration}{");
 
-			os.print("\\small " + HTMLtoLaTeXBackEnd.fixText(cd.modifiers())
-					+ " ");
+			os.println("\\begin{lstlisting}[frame=trBL]");
+			os.print(cd.modifiers() + " ");
 			if (cd.isInterface() == false) {
 				os.print("class ");
 			}
-			os.println(HTMLtoLaTeXBackEnd.fixText(cd.name()));
+			os.println(cd.name());
 			ClassDoc sc = cd.superclass();
 			if (sc != null) {
-				os.println("\\\\ " + BOLD + " extends} "
-						+ HTMLtoLaTeXBackEnd.fixText(sc.qualifiedName()));
-				printRef(sc.containingPackage(), sc.name(), null);
+				os.print(" extends "
+						+ sc.qualifiedName());
 			}
 
 			ClassDoc intf[] = cd.interfaces();
 			if (intf.length > 0) {
 				if (cd.isInterface() == false) {
-					os.println("\\\\ " + BOLD + " implements} ");
+					os.print(" implements ");
 				} else {
-					os.println("\\\\ " + BOLD + " extends} ");
+					os.print(" extends ");
 				}
 				for (int j = 0; j < intf.length; ++j) {
 					ClassDoc in = intf[j];
@@ -1147,10 +1191,10 @@ public class TeXDoclet extends Doclet {
 					if (j > 0) {
 						os.print(", ");
 					}
-					os.print(HTMLtoLaTeXBackEnd.fixText(nm));
+					os.print(nm);
 				}
 			}
-			os.println("}");
+			os.println("\\end{lstlisting}");
 			ExecutableMemberDoc[] mems;
 			FieldDoc[] flds;
 
@@ -1400,7 +1444,7 @@ public class TeXDoclet extends Doclet {
 				os.println("\\begin{itemize}");
 				if (f.inlineTags().length > 0) {
 					os.println("\\item{\\vskip -.9ex ");
-					printTags(f.inlineTags());
+					printTags(f.containingPackage(), f.inlineTags());
 					os.println("}");
 				}
 
@@ -1459,7 +1503,7 @@ public class TeXDoclet extends Doclet {
 				os.print("}");
 			}
 			os.print(" ");
-			printTags(mem.firstSentenceTags());
+			printTags(mem.containingPackage(), mem.firstSentenceTags());
 			os.println("\\\\");
 		}
 		os.println("\\end{verse}");
@@ -1494,7 +1538,7 @@ public class TeXDoclet extends Doclet {
 				os.print("}");
 			}
 			os.print(" ");
-			printTags(mem.firstSentenceTags());
+			printTags(mem.containingPackage(), mem.firstSentenceTags());
 			os.println("\\\\");
 		}
 		os.println("\\end{verse}");
@@ -1621,33 +1665,28 @@ public class TeXDoclet extends Doclet {
 		os.println();
 
 		// Print signature
-		os.print(TRUETYPE);
+		os.println("\\begin{lstlisting}[frame=single]");
 		if (!mem.containingClass().isInterface()) {
-			os.print(HTMLtoLaTeXBackEnd.fixText(mem.modifiers()));
+			os.print(mem.modifiers() + " ");
 		}
 		if (mem instanceof MethodDoc) {
-			os.print(" "
-					+ HTMLtoLaTeXBackEnd.fixText(packageRelativIdentifier(pac,
-							((MethodDoc) mem).returnType().toString())));
+			os.print(packageRelativIdentifier(pac, ((MethodDoc) mem)
+					.returnType().toString()) + " ");
 		}
-		os.print("\\ " + BOLD + " " + HTMLtoLaTeXBackEnd.fixText(mem.name())
-				+ "}(");
+		os.print(mem.name() + "(");
 		Parameter[] parms = mem.parameters();
 		int p = 0;
 		String qparmstr = "";
 		String parmstr = "";
 		for (; p < parms.length; ++p) {
 			if (p > 0) {
-				os.println(",");
+				os.print(",");
 			}
 			Type t = parms[p].type();
-			os.print(TRUETYPE
-					+ HTMLtoLaTeXBackEnd.fixText(packageRelativIdentifier(pac,
-							t.qualifiedTypeName())));
-			os.print(HTMLtoLaTeXBackEnd.fixText(t.dimension()) + "}");
+			os.print(packageRelativIdentifier(pac, t.qualifiedTypeName()));
+			os.print(t.dimension());
 			if (parms[p].name().equals("") == false) {
-				os.print(" " + BOLD + " "
-						+ HTMLtoLaTeXBackEnd.fixText(parms[p].name()) + "}");
+				os.print(" " + parms[p].name());
 			}
 			if (qparmstr.length() != 0) {
 				qparmstr += ",";
@@ -1668,19 +1707,7 @@ public class TeXDoclet extends Doclet {
 				os.print(", " + thrownExceptions[e].qualifiedName());
 			}
 		}
-		os.println();
-
-		if (copiedTo == null) {
-			os.print("\\label{"
-					+ refName(makeRefKey(mem.qualifiedName() + mem.signature()))
-					+ "}");
-		} else {
-			os.print("\\label{"
-					+ refName(makeRefKey(copiedTo.qualifiedName()
-							+ copiedTo.signature())) + "}");
-		}
-
-		os.println("}%end signature");
+		os.println("\\end{lstlisting} %end signature");
 		boolean yet = false;
 
 		// Description
@@ -1707,7 +1734,7 @@ public class TeXDoclet extends Doclet {
 				os.print("\\refdefined{" + refName(makeRefKey(classname)) + "}");
 				os.println("} }\n");
 			}
-			printTags(mem.inlineTags());
+			printTags(mem.containingPackage(), mem.inlineTags());
 			os.println("\n}");
 		}
 
@@ -1725,7 +1752,7 @@ public class TeXDoclet extends Doclet {
 				os.print(TRUETYPE
 						+ HTMLtoLaTeXBackEnd.fixText(params[j].parameterName())
 						+ "}" + " -- ");
-				printTags(params[j].inlineTags());
+				printTags(mem.containingPackage(), params[j].inlineTags());
 				os.println("}");
 			}
 			os.println("  \\end{itemize}");
@@ -1742,7 +1769,7 @@ public class TeXDoclet extends Doclet {
 				}
 				os.println("\\item{" + BOLD + " Returns} -- ");
 				for (int j = 0; j < ret.length; ++j) {
-					printTags(ret[j].inlineTags());
+					printTags(mem.containingPackage(), ret[j].inlineTags());
 					os.println(" ");
 				}
 				os.println("}%end item");
@@ -1767,7 +1794,7 @@ public class TeXDoclet extends Doclet {
 					}
 					os.print("   \\item{\\vskip -.6ex " + TRUETYPE
 							+ HTMLtoLaTeXBackEnd.fixText(ename) + "} -- ");
-					printTags(excp[j].inlineTags());
+					printTags(mem.containingPackage(), excp[j].inlineTags());
 					os.println("}");
 				}
 				os.println("  \\end{itemize}");
@@ -1979,7 +2006,7 @@ public class TeXDoclet extends Doclet {
 	/**
 	 * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
 	 */
-	static void printTags(Tag[] tags) {
+	static void printTags(PackageDoc this_package, Tag[] tags) {
 		String htmlstr = new String();
 
 		for (int i = 0; i < tags.length; i++) {
@@ -1987,40 +2014,52 @@ public class TeXDoclet extends Doclet {
 				SeeTag link = (SeeTag) tags[i];
 
 				String linkstr = "";
+				String label;
 				if (link.referencedMember() != null) {
+					MemberDoc member = link.referencedMember(); 
+					linkstr = member.qualifiedName();
+					label = classRelativeIdentifier(member.containingClass(), member.name());
 					if (link.referencedMember() instanceof ExecutableMemberDoc) {
-						ExecutableMemberDoc m = (ExecutableMemberDoc) link
-								.referencedMember();
-						linkstr = m.qualifiedName() + m.signature();
-					} else {
-						linkstr = link.referencedMember().qualifiedName();
+						// If the member is a method, append the method signature
+						ExecutableMemberDoc m = (ExecutableMemberDoc) member;
+						linkstr += m.signature();
+						label += m.flatSignature();
 					}
 				} else if (link.referencedClass() != null) {
 					linkstr = link.referencedClass().qualifiedName();
+					label = packageRelativIdentifier(this_package, link.referencedClass().name());
 				} else if (link.referencedPackage() != null) {
 					linkstr = link.referencedPackage().name();
+					label = linkstr;
+				} else {
+					label = "";
 				}
 
-				if (linkstr.equals("")) {
+				if (linkstr.isEmpty()) {
 					htmlstr += link.text();
 				} else {
 					// Encapsulate the link in a "TEX" tag and let
 					// HTMLtoLaTeXBackEnd.fixText handle the rest.
-					htmlstr += "<TEX txt=\"";
+					htmlstr += "<TEX txt=\"\\texttt{\\small ";
 					if (hyperref) {
 						htmlstr += "\\hyperlink{"
 								+ refName(makeRefKey(linkstr)) + "}{";
 					}
-					htmlstr += HTMLtoLaTeXBackEnd.fixText(link.label());
+					if (!link.label().isEmpty()) {
+						label = link.label();
+					}
+					htmlstr += HTMLtoLaTeXBackEnd.fixText(label);
 					if (hyperref) {
 						htmlstr += "}";
 					}
-					htmlstr += "{\\small \n";
+					htmlstr += "}{\\small \n";
 					htmlstr += "\\refdefined{" + refName(makeRefKey(linkstr))
 							+ "}";
 					htmlstr += "}";
 					htmlstr += "\"></TEX>";
 				}
+			} else if ("@code".equals(tags[i].name())) {
+				htmlstr += "<code>" + tags[i].text() + "</code>";
 			} else {
 				htmlstr += tags[i].text();
 			}
@@ -2061,9 +2100,30 @@ public class TeXDoclet extends Doclet {
 	 *            The identifier to be made relative.
 	 */
 	static String packageRelativIdentifier(PackageDoc doc, String str) {
-		if (str.startsWith(doc.name() + ".")) {
+		if (doc != null && str.startsWith(doc.name() + ".")) {
 			return str.substring(doc.name().length() + 1);
 		} else {
+			return str;
+		}
+	}
+
+	/**
+	 * Returns a class relative identifier.
+	 * 
+	 * @param doc
+	 *            The class the identifier should be relative to.
+	 * @param str
+	 *            The identifier to be made relative.
+	 */
+	static String classRelativeIdentifier(ClassDoc doc, String str) {
+		if (str.startsWith(doc.name())) {
+			// This is a member or a method of the same class
+			return str.substring(doc.name().length() + 1);
+		} else if (str.startsWith(doc.containingPackage().name())) {
+			// This is a member or a method of a different class but from the same package
+			return str.substring(doc.name().length() + 1);
+		} else {
+			// This is a member or a method from a different package, cannot be simplified
 			return str;
 		}
 	}
