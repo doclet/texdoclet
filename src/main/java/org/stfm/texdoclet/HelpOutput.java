@@ -77,9 +77,9 @@ public class HelpOutput {
 		System.err
 				.println("                          Use a specific package order.");
 		System.err
-				.println("-classdeclrframe          Frame type parameter for class declaration code listing. Default is 'none'. See Latex Listings package documentation (lstlisting).");
+				.println("-classdeclrframe <value>  Frame type parameter for class declaration code listing. Default is 'none'. See Latex Listings package documentation (lstlisting).");
 		System.err
-				.println("-methoddeclrframe         Frame type parameter for class declaration code listing. Default is 'none'. See Latex Listings package documentation (lstlisting).");
+				.println("-methoddeclrframe <value> Frame type parameter for class declaration code listing. Default is 'none'. See Latex Listings package documentation (lstlisting).");
 	}
 
 }
