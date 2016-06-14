@@ -183,7 +183,7 @@ import com.sun.javadoc.Type;
 @SuppressWarnings("restriction")
 public class TeXDoclet extends Doclet {
 
-	private static final String PDFLATEX_CMD = "pdflatex -interaction=nonstopmode ";
+	private static final String PDFLATEX_CMD = "lualatex --interaction=nonstopmode --output-format=pdf ";
 	private static final int PDFLATEX_ITERATIONS = 2;
 
 	private static final String OUT_FILENAME_DOCS_TEX = "docs.tex";
