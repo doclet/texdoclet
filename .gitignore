@@ -29,3 +29,8 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# IntelliJ Artifacts
+/target
+*.iml
+/.idea/

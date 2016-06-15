@@ -5,7 +5,7 @@
 
 	<groupId>org.stfm</groupId>
 	<artifactId>texdoclet</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<name>TexDoclet</name>
 	<packaging>jar</packaging>
 
@@ -81,6 +81,11 @@
 			<groupId>com.keypoint</groupId>
 			<artifactId>png-encoder</artifactId>
 			<version>1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
 		</dependency>
 
 		<!-- some mark down processors -->
