@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,11 +33,13 @@ import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.ThrowsTag;
 import com.sun.javadoc.Type;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This class provides a Java <code>javadoc</code> Doclet which generates a <TEX
@@ -538,7 +541,6 @@ public class TeXDoclet extends Doclet {
 	 *            the root of the starting document
 	 */
 	public static boolean start(RootDoc root) {
-
 		theroot = root;
 
 		init();
@@ -2079,12 +2081,98 @@ public class TeXDoclet extends Doclet {
 				}
 			} else if ("@code".equals(tags[i].name())) {
 				htmlstr += "<code>" + tags[i].text() + "</code>";
+			} else if ("@value".equals(tags[i].name())) {
+				final String value = getValue(tags[i]);
+				if (value != null) {
+					htmlstr += "<code>" + value + "</code>";
+				}
 			} else {
 				htmlstr += tags[i].text();
 			}
 		}
 
 		os.print(HTMLtoLaTeXBackEnd.fixText(htmlstr));
+	}
+
+	static String getValue(final Tag tag) {
+		final String text = tag.text().trim();
+		final String classpath;
+		final String member;
+
+		if (text.isEmpty()) {
+			if (tag.holder() instanceof FieldDoc) {
+				final FieldDoc fieldDoc = ((FieldDoc) tag.holder());
+				return fieldDoc.constantValueExpression();
+			} else {
+				throw new RuntimeException(
+						 "@value cannot be empty when not documenting a field. " + tag + ", position: " + tag.position());
+			}
+		} else if (!text.contains("#")) {
+			return null;
+		} else {
+			final String[] parts = text.split("#");
+
+			if (parts.length != 2 || parts[1].isEmpty()) {
+				throw new RuntimeException(
+						"Invalid tag format: " + tag + ", position: " + tag.position());
+			}
+
+			member = parts[1];
+
+			if (parts[0].isEmpty()) {
+				if (tag.holder() instanceof ClassDoc) {
+					final ClassDoc classDoc = ((ClassDoc) tag.holder());
+					classpath = classDoc.qualifiedName();
+				} else if (tag.holder() instanceof ProgramElementDoc) {
+					final ProgramElementDoc elDoc = ((ProgramElementDoc) tag.holder());
+					classpath = elDoc.qualifiedName().replaceAll("\\." + elDoc.name() + "$", "");
+				} else {
+					throw new RuntimeException("Unable to find parent class.");
+				}
+			} else {
+				classpath = parts[0];
+			}
+		}
+
+        final Class clazz;
+        try {
+            clazz = getClassForNameBackoff(classpath);
+        } catch (final ClassNotFoundException e) {
+            throw new RuntimeException(
+                    "Unable to find class in {@value " + text + "}. " + tag.position(), e);
+        }
+
+        final Field field;
+        try {
+            field = clazz.getDeclaredField(member);
+        } catch (final NoSuchFieldException e) {
+            throw new RuntimeException(
+                    "Field \"" + member + "\n on class \"" + clazz.getCanonicalName() + "\". "
+                            + tag.position(), e);
+        }
+
+        field.setAccessible(true);
+        try {
+            return field.get(null).toString();
+        } catch (final IllegalAccessException e) {
+            throw new RuntimeException(
+                    "Unable to access field: " + field + ". " + tag.position(), e);
+        }
+	}
+
+	static Class getClassForNameBackoff(final String classpath) throws ClassNotFoundException {
+		final int dots = StringUtils.countMatches(classpath, ".");
+		for (int i = 0; i <= dots; i++) {
+			final String newClasspath = StringUtils.reverse(
+					StringUtils.replace(StringUtils.reverse(classpath), ".", "$", i));
+			try {
+				return Class.forName(newClasspath);
+			} catch (final ClassNotFoundException e) {
+				System.out.println("Couldn't find: " + newClasspath);
+			}
+		}
+
+		throw new ClassNotFoundException(classpath);
 	}
 
 	/**
