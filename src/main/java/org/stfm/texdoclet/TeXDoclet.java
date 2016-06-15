@@ -541,8 +541,6 @@ public class TeXDoclet extends Doclet {
 	 *            the root of the starting document
 	 */
 	public static boolean start(RootDoc root) {
-//		System.exit(777);
-
 		theroot = root;
 
 		init();
