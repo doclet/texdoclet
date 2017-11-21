@@ -2225,11 +2225,13 @@ public class TeXDoclet extends Doclet {
 		for (int i = 0; i < root.options().length; i++) {
 			if (root.options()[i][0].equalsIgnoreCase("-sourcepath")) {
 				sourcepath = root.options()[i][1];
+				System.out.println("Found source path in program parameters: " + sourcepath);
 			}
 		}
 
 		if (sourcepath == null) {
 			sourcepath = ".";
+			System.out.println("Setting source path to: " + sourcepath);
 		} else if (sourcepath.startsWith("\"")) {
 			sourcepath = sourcepath.substring(1);
 			if (sourcepath.endsWith("\"")) {
@@ -2240,6 +2242,7 @@ public class TeXDoclet extends Doclet {
 		StringTokenizer sourcepathToken = new StringTokenizer(sourcepath, ";");
 		while (sourcepathToken.hasMoreTokens()) {
 			String token = sourcepathToken.nextToken();
+			System.out.println("Checking source path: " + token);
 			if (token.equals(".")) {
 				f = null;
 			} else {
@@ -2267,7 +2270,7 @@ public class TeXDoclet extends Doclet {
 				}
 			}
 		}
-
+		System.err.println("Could not determine pakckage dir.");
 		return null;
 	}
 
