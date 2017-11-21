@@ -125,8 +125,11 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 				new File(IMAGES_DIR).mkdir();
 
 				double scale = 1.0;
+				System.out.println("Package dir: " + TeXDoclet.packageDir);
+				System.out.println("Referenced image: " + refimg);
 				File imgF = new File(TeXDoclet.packageDir, refimg);
 				if (!imgF.exists()) {
+					System.err.println("Image not found: " + TeXDoclet.packageDir + "/" + refimg);
 					ret.append("(image file not found)");
 					return;
 				}
