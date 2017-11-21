@@ -2239,7 +2239,7 @@ public class TeXDoclet extends Doclet {
 			}
 		}
 
-		StringTokenizer sourcepathToken = new StringTokenizer(sourcepath, ";");
+		StringTokenizer sourcepathToken = new StringTokenizer(sourcepath, File.pathSeparator);
 		while (sourcepathToken.hasMoreTokens()) {
 			String token = sourcepathToken.nextToken();
 			System.out.println("Checking source path: " + token);
