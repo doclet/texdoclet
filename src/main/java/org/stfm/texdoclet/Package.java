@@ -75,12 +75,9 @@ public class Package {
 	 * Sorts the vectors of classes, interfaces exceptions and errors.
 	 */
 	public void sort() {
-
-		Comparator comp = new Comparator() {
+		Comparator<ClassDoc> comp = new Comparator<ClassDoc>() {
 			@Override
-			public int compare(Object o1, Object o2) {
-				ClassDoc cls1 = (ClassDoc) o1;
-				ClassDoc cls2 = (ClassDoc) o2;
+			public int compare(ClassDoc cls1, ClassDoc cls2) {
 				return cls1.name().compareToIgnoreCase(cls2.name());
 			}
 

@@ -18,7 +18,7 @@ import com.sun.javadoc.RootDoc;
  */
 public class ClassHierachy extends java.lang.Object {
 
-	public SortedMap root = new TreeMap();
+	public SortedMap<String, SortedMap> root = new TreeMap<>();
 
 	/**
 	 * Creates new ClassHierachy
@@ -29,17 +29,17 @@ public class ClassHierachy extends java.lang.Object {
 	/**
 	 * Adds another class to the hierachy
 	 */
-	protected SortedMap add(ClassDoc cls) {
-		SortedMap temp;
+	protected SortedMap<String, SortedMap> add(ClassDoc cls) {
+		SortedMap<String, SortedMap> temp;
 		if (cls.superclass() != null) {
 			temp = add(cls.superclass());
 		} else {
 			temp = root;
 		}
 
-		SortedMap result = (SortedMap) temp.get(cls.qualifiedName());
+		SortedMap<String, SortedMap> result = temp.get(cls.qualifiedName());
 		if (result == null) {
-			result = new TreeMap();
+			result = new TreeMap<String, SortedMap>();
 			temp.put(cls.qualifiedName(), result);
 		}
 		return result;
