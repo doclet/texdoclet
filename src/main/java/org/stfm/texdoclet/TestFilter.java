@@ -8,7 +8,6 @@ import com.sun.javadoc.ClassDoc;
  * 
  * @version $Revision: 1.2 $
  */
-@SuppressWarnings("restriction")
 public class TestFilter implements ClassFilter {
 
 	/**

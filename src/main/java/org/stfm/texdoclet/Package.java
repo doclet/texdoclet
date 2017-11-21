@@ -19,7 +19,6 @@ import com.sun.javadoc.PackageDoc;
  * @version $Revision: 1.1 $
  * @author Gregg Wonderly - C2 Technologies Inc.
  */
-@SuppressWarnings("restriction")
 public class Package {
 
 	protected PackageDoc pkgDoc;

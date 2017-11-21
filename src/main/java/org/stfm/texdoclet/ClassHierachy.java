@@ -16,7 +16,6 @@ import com.sun.javadoc.RootDoc;
  * @version $Revision: 1.1 $
  * @author Soeren Caspersen - XO Software
  */
-@SuppressWarnings("restriction")
 public class ClassHierachy extends java.lang.Object {
 
 	public SortedMap root = new TreeMap();

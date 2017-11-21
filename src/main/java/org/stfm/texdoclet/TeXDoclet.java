@@ -180,7 +180,6 @@ import com.sun.javadoc.Type;
  * @author Soeren Caspersen - XO Software.
  * @author Stefan Marx
  */
-@SuppressWarnings("restriction")
 public class TeXDoclet extends Doclet {
 
 	private static final String PDFLATEX_CMD = "lualatex --interaction=nonstopmode --output-format=pdf ";
