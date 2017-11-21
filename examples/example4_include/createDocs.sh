@@ -4,7 +4,7 @@
 #   is included in another Latex document (MyDocument.tex) here
 #
 
-mkdir texdoclet_output
+mkdir -p texdoclet_output
 
 rm MyDocument.aux
 rm MyDocument.idx

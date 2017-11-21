@@ -2,7 +2,7 @@
 # this example demonstrates the use of different .tex inlude files
 #
 
-mkdir texdoclet_output
+mkdir -p texdoclet_output
 
 rm texdoclet_output/TeXDoclet.aux
 
