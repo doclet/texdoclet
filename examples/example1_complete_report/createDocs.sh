@@ -20,5 +20,5 @@ javadoc -docletpath ../../target/TeXDoclet.jar \
 cd texdoclet_output
 pdflatex TeXDoclet.tex
 pdflatex TeXDoclet.tex
-mkdir ../javadoc
+mkdir -p ../javadoc
 cp TeXDoclet.pdf ../javadoc
