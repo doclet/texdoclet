@@ -702,16 +702,17 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 
 	private String removeLeadingSpaces(String str) {
 		StringBuffer sb = new StringBuffer();
-		Scanner scanner = new Scanner(str);
-		while (scanner.hasNextLine()) {
-			String l = scanner.nextLine();
-			if (l.startsWith(" ")) {
-				sb.append(l.substring(1) + System.getProperty("line.separator"));
-			} else {
-				sb.append(l + System.getProperty("line.separator"));
+		try (Scanner scanner = new Scanner(str)) {
+			while (scanner.hasNextLine()) {
+				String l = scanner.nextLine();
+				if (l.startsWith(" ")) {
+					sb.append(l.substring(1) + System.getProperty("line.separator"));
+				} else {
+					sb.append(l + System.getProperty("line.separator"));
+				}
 			}
+			return sb.toString();
 		}
-		return sb.toString();
 	}
 
 }

@@ -470,9 +470,10 @@ public class TeXDoclet extends Doclet {
 				try {
 					FileInputStream in = new FileInputStream(args[i][2]
 							+ ".map");
-					ObjectInputStream p = new ObjectInputStream(in);
-					Hashtable<?, ?> exref = (Hashtable<?, ?>) p.readObject();
-					externalrefs.put(args[i][1], exref);
+					try (ObjectInputStream p = new ObjectInputStream(in)) {
+						Hashtable<?, ?> exref = (Hashtable<?, ?>) p.readObject();
+						externalrefs.put(args[i][1], exref);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
