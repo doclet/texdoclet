@@ -1504,7 +1504,7 @@ public class TeXDoclet extends Doclet {
 		List<ExecutableMemberDoc> l = Arrays.asList(dmems);
 		Collections.sort(l);
 		Iterator<ExecutableMemberDoc> itr = l.iterator();
-		for (int i = 0; itr.hasNext(); ++i) {
+		while (itr.hasNext()) {
 			ExecutableMemberDoc mem = itr.next();
 			if (hyperref) {
 				os.print("\\hyperlink{"
@@ -1542,7 +1542,7 @@ public class TeXDoclet extends Doclet {
 		List<FieldDoc> l = Arrays.asList(dmems);
 		Collections.sort(l);
 		Iterator<FieldDoc> itr = l.iterator();
-		for (int i = 0; itr.hasNext(); ++i) {
+		while (itr.hasNext()) {
 			FieldDoc mem = itr.next();
 			if (hyperref) {
 				os.print("\\hyperlink{"
@@ -1920,7 +1920,7 @@ public class TeXDoclet extends Doclet {
 
 			os.println("\\vskip -2em");
 			os.println("\\begin{itemize}");
-			for (int i = 0; itr.hasNext(); ++i) {
+			while (itr.hasNext()) {
 				MemberDoc mem = itr.next();
 
 				// Print signature
