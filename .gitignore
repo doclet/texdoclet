@@ -29,3 +29,17 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+/target/
+
+.classpath
+.project
+.settings
+
+/examples/**/*.aux
+/examples/**/*.idx
+/examples/**/*.out
+/examples/**/*.pdf
+/examples/**/*.toc
+/examples/**/*.tex
+/examples/**/*.map
+/examples/**/*.png
