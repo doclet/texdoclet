@@ -2309,9 +2309,6 @@ public class TeXDoclet extends Doclet {
 
 		String cmd = PDFLATEX_CMD + outfile;
 
-		// debuggin only
-		// execute("pwd", null);
-
 		for (int i = 0; i < PDFLATEX_ITERATIONS; i++) {
 			execute(cmd, null, false);
 		}
