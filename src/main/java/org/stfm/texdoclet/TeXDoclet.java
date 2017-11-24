@@ -2225,7 +2225,7 @@ public class TeXDoclet extends Doclet {
 		for (int i = 0; i < root.options().length; i++) {
 			if (root.options()[i][0].equalsIgnoreCase("-sourcepath")) {
 				sourcepath = root.options()[i][1];
-				System.out.println("Found source path in program parameters: " + sourcepath);
+				// System.out.println("Found source path in program parameters: " + sourcepath);
 			}
 		}
 
