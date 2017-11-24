@@ -2270,7 +2270,7 @@ public class TeXDoclet extends Doclet {
 				}
 			}
 		}
-		System.err.println("Could not determine pakckage dir.");
+		System.err.println("Could not determine package dir.");
 		return null;
 	}
 
