@@ -2135,7 +2135,9 @@ public class TeXDoclet extends Doclet {
 	 *            The identifier to be made relative.
 	 */
 	static String classRelativeIdentifier(ClassDoc doc, String str) {
-		if (str.startsWith(doc.name())) {
+		if (str.equals(doc.name())) {
+			return "";
+		} else if (str.startsWith(doc.name())) {
 			// This is a member or a method of the same class
 			return str.substring(doc.name().length() + 1);
 		} else if (str.startsWith(doc.containingPackage().name())) {
