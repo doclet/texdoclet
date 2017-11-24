@@ -38,7 +38,9 @@ Example :
 		-title "TeXDoclet Java Documentation" \
 		-author "Greg Wonderly \and S\"oren Caspersen \and Stefan Marx" \
 		-sourcepath src/main/java \
-		-subpackages org
+		-subpackages org.stfm.texdoclet
+
+The most important is that you specify the Java packages (option `-subpackage`) and their location in the file system (option `-sourcepath`) correctly, otherwise no output is generated (specifying `-sourcepath` alone is not sufficient).
 
 See `createDocs.sh` scripts in `/examples` subdirectory for more examples.
 
@@ -98,6 +100,10 @@ Calling `mvn javadoc:javadoc` creates `TeXDoclet.tex` (and `TeXDoclet.pdf`, see 
 
 See `pom.xml` for example usage and more details about how to integrate *TeXDoclet* with maven `site:site` goal. Also check out [this example maven site project documentation](http://doclet.github.com/texdoclet/site).
 
+Known issues
+------------
+
+If the `pdflatex` document compilation fails with a "TeX capacity exceeded, sorry ..." error message you better use the alternative command `lualatex` from the [LuaTeX project]<http://www.luatex.org>.
 
 Previous versions
 -----------------
