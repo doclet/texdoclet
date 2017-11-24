@@ -699,6 +699,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 		try {
 			new ParserDelegator().parse(reader, b, false);
 		} catch (IOException e) {
+			System.err.println("Caught exception when converting HTML text to TEX: " + e.getMessage());
 		}
 		return new String(result);
 	}
