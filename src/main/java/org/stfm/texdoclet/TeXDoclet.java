@@ -707,6 +707,7 @@ public class TeXDoclet extends Doclet {
 				}
 				tocForClasses("Interfaces", pkg.interfaces);
 				tocForClasses("Classes", pkg.classes);
+				tocForClasses("Exceptions", pkg.exceptions);
 				os.println("\\vskip .1in");
 				if (useHr) {
 					os.println("\\rule{\\hsize}{.7mm}");
