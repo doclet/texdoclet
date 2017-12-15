@@ -63,12 +63,6 @@
 			<id>scala-tools</id>
 			<url>http://scala-tools.org/repo-releases</url>
 		</repository>
-    <!-- not available - pull from central repo instead
-		<repository>
-			<id>renejeschke-releases</id>
-			<url>http://maven.renejeschke.de</url>
-		</repository>
-    -->
 	</repositories>
 
 	<dependencies>
@@ -105,7 +99,7 @@
 		<dependency>
 		    <groupId>com.github.rjeschke</groupId>
 		    <artifactId>txtmark</artifactId>
-		    <version>0.8</version><!-- version 0.7 not available anymore -->
+		    <version>0.8</version>
 		</dependency>
 
 	</dependencies>
