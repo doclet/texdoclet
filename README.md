@@ -78,17 +78,17 @@ Then you can use TeXDoclet as an alternate doclet in the `pom.xml` file of any p
 					<sourcepath>src/main/java:src/test/java</sourcepath>
 					<useStandardDocletOptions>false</useStandardDocletOptions><!-- important ! -->
 					<destDir>apidocs_tex</destDir>
-					<additionalparam>
-						-tree
-						-hyperref
-						-output TeXDoclet.tex
-						-createpdf
-						-title "TeXDoclet Java Documentation"
-						-subtitle "Created with Javadoc TeXDoclet Doclet"
-						-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx"
-						-subpackages org
-						-shortinherited
-					</additionalparam>
+					<additionalOptions>
+						<additionalOption>-tree<additionalOption>
+						<additionalOption>-hyperref<additionalOption>
+						<additionalOption>-output TeXDoclet.tex<additionalOption>
+						<additionalOption>-createpdf<additionalOption>
+						<additionalOption>-title "TeXDoclet Java Documentation"<additionalOption>
+						<additionalOption>-subtitle "Created with Javadoc TeXDoclet Doclet"<additionalOption>
+						<additionalOption>-author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx"<additionalOption>
+						<additionalOption>-subpackages org<additionalOption>
+						<additionalOption>-shortinherited<additionalOption>
+					</additionalOptions>
 				</configuration>
 			</plugin>
 			...

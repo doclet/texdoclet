@@ -63,10 +63,6 @@
 			<id>scala-tools</id>
 			<url>http://scala-tools.org/repo-releases</url>
 		</repository>
-		<repository>
-			<id>renejeschke-releases</id>
-			<url>http://maven.renejeschke.de</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
@@ -76,7 +72,7 @@
             <version>1.6.0</version>
             <scope>system</scope>
             <systemPath>${toolsjar}</systemPath>
-        </dependency>	
+        </dependency>
 		<dependency>
 			<groupId>com.keypoint</groupId>
 			<artifactId>png-encoder</artifactId>
@@ -103,7 +99,7 @@
 		<dependency>
 		    <groupId>com.github.rjeschke</groupId>
 		    <artifactId>txtmark</artifactId>
-		    <version>0.7</version>
+		    <version>0.8</version>
 		</dependency>
 
 	</dependencies>
