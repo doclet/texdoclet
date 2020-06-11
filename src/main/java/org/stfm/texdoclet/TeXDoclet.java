@@ -1091,7 +1091,9 @@ public class TeXDoclet extends Doclet {
 		}
 		if (exceptionHierachy.root.size() != 0) {
 			os.println("\\" + sectionLevels[1] + "*{Exceptions}");
+			os.println("{\\raggedright");
 			exceptionHierachy.printTree(root, overviewindent);
+			os.println("}");
 		}
 
 		// Errors
