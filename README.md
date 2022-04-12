@@ -3,12 +3,6 @@ TeXDoclet
 
 TeXDoclet is a Java doclet implementation that generates a LaTeX file from you Java code documentation.
 
-The doclet is based on the doclet originally created by Greg Wonderly of
-[C2 technologies Inc.](http://www.c2-tech.com>) and its revision by Soeren Caspersen of
-[XO Software](http://www.xosoftware.dk).
-
-See <http://doclet.github.com> for more information.
-
 Build
 -----
 
@@ -40,7 +34,7 @@ Example :
 		-sourcepath src/main/java \
 		-subpackages org.stfm.texdoclet
 
-The most important is that you specify the Java packages (option `-subpackage`) and their location in the file system (option `-sourcepath`) correctly, otherwise no output is generated (specifying `-sourcepath` alone is not sufficient).
+The most important is that you specify the Java packages (option `-subpackage`) and their location in the file system (option `-sourcepath`) correctly, otherwise no output will be generated (specifying `-sourcepath` alone is not sufficient).
 
 See `createDocs.sh` scripts in `/examples` subdirectory for more examples.
 
