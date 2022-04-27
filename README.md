@@ -97,13 +97,13 @@ See `pom.xml` for example usage and more details about how to integrate *TeXDocl
 Known issues
 ------------
 
-If the `pdflatex` document compilation fails with a "TeX capacity exceeded, sorry ..." error message you better use the alternative command `lualatex` from the [LuaTeX project]<http://www.luatex.org>.
+If the `pdflatex` document compilation fails with a "TeX capacity exceeded, sorry ..." error message you better use the alternative command `lualatex` from the [LuaTeX project](http://www.luatex.org).
 
 Previous versions
 -----------------
 
-- The intitial project of Greg Wonderly is available here : <http://java.net/projects/texdoclet>.
-- Its [revision](http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet/1.3/share/README.txt) by Soeren Caspersen you find here : <http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet>.
+- The intitial project of Greg Wonderly is available here: <http://java.net/projects/texdoclet>.
+- Its [revision](http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet/1.3/share/README.txt) by Soeren Caspersen you find here: <http://egee-jra1-integration.web.cern.ch/egee-jra1-integration/repository/texdoclet>.
 
 License
 -----------------
