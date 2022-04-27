@@ -92,7 +92,7 @@ Then you can use TeXDoclet as an alternate doclet in the `pom.xml` file of any p
 
 Calling `mvn javadoc:javadoc` creates `TeXDoclet.tex` (and `TeXDoclet.pdf`, see switch `-createpdf`) in the `target/site/apidocs/apidocs_tex` directory.
 
-See `pom.xml` for example usage and more details about how to integrate *TeXDoclet* with maven `site:site` goal. Also check out [this example maven site project documentation](http://doclet.github.com/texdoclet/site).
+See `pom.xml` for example usage and more details about how to integrate *TeXDoclet* with maven `site:site` goal. Also check out [this example maven site project documentation](http://doclet.github.io/texdoclet/site).
 
 Known issues
 ------------
