@@ -19,7 +19,7 @@
 		<maven-site-plugin.version>3.2</maven-site-plugin.version>
 
 		<finalJarName>TeXDoclet</finalJarName>
-		<texdoclet.version>0.9-SNAPSHOT</texdoclet.version>
+		<texdoclet.version>0.10-SNAPSHOT</texdoclet.version>
 
 	</properties>
 
