@@ -25,16 +25,26 @@
 
 	<profiles>
 		<profile>
-			<id>default-profile</id>
+			<id>java8</id>
 		    <activation>
-		        <activeByDefault>true</activeByDefault>
+		        <activeByDefault>false</activeByDefault>
 		        <file>
 		            <exists>${java.home}/../lib/tools.jar</exists>
 		        </file>
+                <jdk>1.8</jdk>
 		    </activation>
 		    <properties>
 		        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
 		    </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6.0</version>
+                    <scope>system</scope>
+                    <systemPath>${toolsjar}</systemPath>
+                </dependency>
+            </dependencies>
 		</profile>
 		<!-- MAC OS with Sun Java (<= 1.6) -->
 		<profile>
@@ -48,6 +58,15 @@
 		    <properties>
 		        <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
 		    </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6.0</version>
+                    <scope>system</scope>
+                    <systemPath>${toolsjar}</systemPath>
+                </dependency>
+            </dependencies>
 		</profile>
 	</profiles>
 
@@ -66,13 +85,6 @@
 	</repositories>
 
 	<dependencies>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.6.0</version>
-            <scope>system</scope>
-            <systemPath>${toolsjar}</systemPath>
-        </dependency>
 		<dependency>
 			<groupId>com.keypoint</groupId>
 			<artifactId>png-encoder</artifactId>
