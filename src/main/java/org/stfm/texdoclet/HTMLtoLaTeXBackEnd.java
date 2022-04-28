@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -148,7 +149,7 @@ public class HTMLtoLaTeXBackEnd extends HTMLEditorKit.ParserCallback {
 
 				try {
 					if (sw != null) {
-						scale = NumberFormat.getPercentInstance().parse(sw)
+						scale = NumberFormat.getPercentInstance(Locale.ENGLISH).parse(sw)
 								.doubleValue();
 					} else if (sh != null) {
 						scale = NumberFormat.getPercentInstance().parse(sh)
