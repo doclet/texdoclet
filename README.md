@@ -1,3 +1,5 @@
+> **WARNING**: TeXDoclet is only working with Java versions up to Java 11 because of the removal of the old doclet API (com.sun.javadoc). A migration to the new Java Doclet API is curently not planned.
+
 TeXDoclet
 =========
 
